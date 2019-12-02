@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "npx-generic-wizard": [
+        "dist/npx-generic-wizard"
+      ],
+      "npx-generic-wizard/*": [
+        "dist/npx-generic-wizard/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
