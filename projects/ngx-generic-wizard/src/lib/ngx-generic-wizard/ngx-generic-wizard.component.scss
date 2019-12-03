@@ -1,0 +1,24 @@
+.wizard-container {
+  height: 100px;
+  line-height: 100px;
+  margin-bottom: 20px;
+
+  @media screen and (max-width: 992px) {
+    height: 50px;
+    line-height: 50px;
+  }
+}
+
+.wizard-text-center {
+  text-align: center !important;
+}
+
+.wizard-row {
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+  -webkit-box-pack: center !important;
+  justify-content: center !important;
+}

@@ -5,38 +5,37 @@
   "projects": {
     "npx-generic-wizard": {
       "projectType": "library",
-      "root": "projects/npx-generic-wizard",
-      "sourceRoot": "projects/npx-generic-wizard/src",
+      "root": "projects/ngx-generic-wizard",
+      "sourceRoot": "projects/ngx-generic-wizard/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/npx-generic-wizard/tsconfig.lib.json",
-            "project": "projects/npx-generic-wizard/ng-package.json"
+            "tsConfig": "projects/ngx-generic-wizard/tsconfig.lib.json",
+            "project": "projects/ngx-generic-wizard/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/npx-generic-wizard/src/test.ts",
-            "tsConfig": "projects/npx-generic-wizard/tsconfig.spec.json",
-            "karmaConfig": "projects/npx-generic-wizard/karma.conf.js"
+            "main": "projects/ngx-generic-wizard/src/test.ts",
+            "tsConfig": "projects/ngx-generic-wizard/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-generic-wizard/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/npx-generic-wizard/tsconfig.lib.json",
-              "projects/npx-generic-wizard/tsconfig.spec.json"
+              "projects/ngx-generic-wizard/tsconfig.lib.json",
+              "projects/ngx-generic-wizard/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
-    }},
-  "defaultProject": "npx-generic-wizard"
+    }
+  },
+  "defaultProject": "ngx-generic-wizard"
 }
