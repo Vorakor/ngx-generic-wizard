@@ -21,10 +21,10 @@ export class NgxGenericWizardService {
   /**
    * Model based behavior subjects and observables
    */
-  private ngxGwConfig: BehaviorSubject<INgxGwConfig[]> = new BehaviorSubject<
+  private ngxGwConfigs: BehaviorSubject<INgxGwConfig[]> = new BehaviorSubject<
     INgxGwConfig[]
   >(null);
-  ngxGwConfig$: Observable<INgxGwConfig[]> = this.ngxGwConfig.asObservable();
+  ngxGwConfigs$: Observable<INgxGwConfig[]> = this.ngxGwConfigs.asObservable();
   // Part of admin type pages and functionality that will be built later
   // private ngxGwConfigHistory: BehaviorSubject<
   //   NgxGwConfigHistory[]
@@ -113,7 +113,7 @@ export class NgxGenericWizardService {
         steps.sort((a, b) => a.stepOrder - b.stepOrder);
         this.ngxGwSteps.next(steps);
         this.setCurrentStepStatuses(step, false);
-        this.ngxGwConfig.next([config]);
+        this.ngxGwConfigs.next([config]);
         this.initialized.next(true);
         this.finalized.next(false);
         this.navigateToStep(step);
@@ -133,7 +133,7 @@ export class NgxGenericWizardService {
     const stepComp = new NgxGwStep();
     if (config) {
       const confComp = new NgxGwConfig();
-      const configs = this.ngxGwConfig.value;
+      const configs = this.ngxGwConfigs.value;
       let addConfig = true;
       // Checking for duplicate configs here
       configs.forEach(conf => {
@@ -143,10 +143,10 @@ export class NgxGenericWizardService {
       });
       if (addConfig) {
         configs.push(config);
-        this.ngxGwConfig.next(configs);
+        this.ngxGwConfigs.next(configs);
       }
     } else {
-      config = this.ngxGwConfig.value.filter(
+      config = this.ngxGwConfigs.value.filter(
         conf => conf.configId === steps[0].configId
       )[0];
       if (!config) {
@@ -227,10 +227,10 @@ export class NgxGenericWizardService {
     } else {
       this.ngxGwSteps.next(otherSteps);
       const configId = steps[0].configId;
-      const configs = this.ngxGwConfig.value.filter(
+      const configs = this.ngxGwConfigs.value.filter(
         conf => conf.configId !== configId
       );
-      this.ngxGwConfig.next(configs);
+      this.ngxGwConfigs.next(configs);
     }
     return;
   }
@@ -381,7 +381,7 @@ export class NgxGenericWizardService {
       this.setCurrentStepStatuses(step, true);
     }
     const stepUrl = step.stepUrl;
-    const baseUrl = this.ngxGwConfig.value.filter(
+    const baseUrl = this.ngxGwConfigs.value.filter(
       conf => conf.configId === step.configId
     )[0].baseUrl;
     this.router.navigate([...baseUrl.split('/'), stepUrl]);
