@@ -14,20 +14,13 @@
 }
 
 .ngx-gw-row {
+  -webkit-box-pack: center !important;
+  justify-content: center !important;
   display: -webkit-box;
   display: flex;
   flex-wrap: wrap;
   margin-right: -15px;
   margin-left: -15px;
-  -webkit-box-pack: center !important;
-  justify-content: center !important;
-}
-
-.ngx-gw-col-line {
-  display: none;
-  @media (max-width: 992px) {
-    display: block !important;
-  }
 }
 
 .ngx-gw-col-lg-auto {
@@ -39,16 +32,23 @@
   }
 }
 
-.ngx-gw-col {
-  flex-basis: 0;
-  -webkit-box-flex: 1;
-  flex-grow: 1;
-  max-width: 100%;
+.ngx-gw-col-line {
+  display: none;
+  @media (max-width: 992px) {
+    display: block !important;
+  }
 }
 
 .ngx-gw-col-12 {
   -webkit-box-flex: 0;
   flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.ngx-gw-col {
+  flex-basis: 0;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
   max-width: 100%;
 }
 
