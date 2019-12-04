@@ -40,6 +40,7 @@ export class NgxGenericWizardService {
     INgxGwStep[]
   >(null);
   ngxGwSteps$: Observable<INgxGwStep[]> = this.ngxGwSteps.asObservable();
+  // Turn the map into an observable instead of using this thing...
   private ngxGwStatuses: BehaviorSubject<
     INgxGwStepStatus[]
   > = new BehaviorSubject<INgxGwStepStatus[]>(null);
@@ -304,6 +305,7 @@ export class NgxGenericWizardService {
       this.setCurrentStepStatuses(nextStep);
       this.navigateToStep(nextStep, true);
     }
+    return;
   }
 
   /**
@@ -357,6 +359,7 @@ export class NgxGenericWizardService {
       }
       this.navigateToStep(nextStep);
     }
+    return;
   }
 
   /**
@@ -385,6 +388,7 @@ export class NgxGenericWizardService {
       conf => conf.configId === step.configId
     )[0].baseUrl;
     this.router.navigate([...baseUrl.split('/'), stepUrl]);
+    return;
   }
 
   /**
@@ -443,6 +447,7 @@ export class NgxGenericWizardService {
     });
     this.addSubscription(init);
     this.ngxGwSteps.next([...otherSteps, ...responseSteps]);
+    return;
   }
 
   /**
@@ -463,6 +468,7 @@ export class NgxGenericWizardService {
       step => step.stepOrder === 1
     )[0].status = this.wizardStepStatusMap.current;
     this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
+    return;
   }
 
   /**
@@ -471,9 +477,11 @@ export class NgxGenericWizardService {
    */
   addSubscription(subscription: Subscription) {
     this.subs.push(subscription);
+    return;
   }
 
   destroyWizard() {
     this.subs.forEach(subscription => subscription.unsubscribe());
+    return;
   }
 }
