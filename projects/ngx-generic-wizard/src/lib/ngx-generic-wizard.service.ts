@@ -6,10 +6,11 @@ import {
   NgxGwStep,
   INgxGwConfig,
   NgxGwConfig,
-  NgxGwConfigHistory,
-  NgxGwStepHistory,
-  NgxGwLogs,
-  NgxGwStepStatusMap
+  INgxGwConfigHistory,
+  INgxGwStepHistory,
+  INgxGwLogs,
+  INgxGwStepStatusMap,
+  INgxGwColorScheme
 } from './interfaces';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
@@ -20,6 +21,12 @@ export class NgxGenericWizardService {
   /**
    * Model based behavior subjects and observables
    */
+  private ngxGwColorSchemes: BehaviorSubject<
+    INgxGwColorScheme[]
+  > = new BehaviorSubject<INgxGwColorScheme[]>(null);
+  ngxGwColorSchemes$: Observable<
+    INgxGwColorScheme[]
+  > = this.ngxGwColorSchemes.asObservable();
   private ngxGwConfigs: BehaviorSubject<INgxGwConfig[]> = new BehaviorSubject<
     INgxGwConfig[]
   >(null);
@@ -47,10 +54,10 @@ export class NgxGenericWizardService {
   //   NgxGwStepHistory[]
   // > = this.ngxGwStepsHistory.asObservable();
   private wizardStepStatusMap: BehaviorSubject<
-    NgxGwStepStatusMap
-  > = new BehaviorSubject<NgxGwStepStatusMap>(null);
+    INgxGwStepStatusMap
+  > = new BehaviorSubject<INgxGwStepStatusMap>(null);
   wizardStepStatusMap$: Observable<
-    NgxGwStepStatusMap
+    INgxGwStepStatusMap
   > = this.wizardStepStatusMap.asObservable();
 
   /**
@@ -84,9 +91,10 @@ export class NgxGenericWizardService {
   initializeStepper(
     config: INgxGwConfig,
     steps: INgxGwStep[],
-    statusMap: NgxGwStepStatusMap,
+    statusMap: INgxGwStepStatusMap,
     externalDataLoaded$: Observable<boolean>,
-    externalDataCurrentStep$: Observable<INgxGwStep>
+    externalDataCurrentStep$: Observable<INgxGwStep>,
+    colorScheme?: INgxGwColorScheme
   ) {
     this.wizardStepStatusMap.next(statusMap);
     const exDaLoad = externalDataLoaded$.subscribe(loaded => {
@@ -109,6 +117,14 @@ export class NgxGenericWizardService {
         this.ngxGwConfigs.next([config]);
         this.initialized.next(true);
         this.finalized.next(false);
+        if (colorScheme) {
+          this.setColorScheme(
+            colorScheme,
+            colorScheme.configId ? config : null
+          );
+        } else {
+          this.setDefaultColorScheme();
+        }
         this.navigateToStep(step);
       });
     this.addSubscription(curStep);
@@ -471,6 +487,24 @@ export class NgxGenericWizardService {
   addSubscription(subscription: Subscription) {
     this.subs.push(subscription);
     return;
+  }
+
+  setColorScheme(scheme: INgxGwColorScheme, config?: INgxGwConfig) {
+    const colorSchemes = this.ngxGwColorSchemes.value;
+    if (
+      config &&
+      colorSchemes.filter(sch => sch.configId === config.configId).length > 0
+    ) {
+      // Update existing color scheme
+    } else if (config) {
+      // Insert new color scheme
+    } else {
+      // Insert template color scheme
+    }
+  }
+
+  setDefaultColorScheme() {
+    // Insert template color scheme (not attached to a config)
   }
 
   destroyWizard() {

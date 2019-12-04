@@ -13,7 +13,7 @@
  * EffectiveDate - When this change took place.
  * ActionTaken - The database method used (inserted, deleted, updated).
  */
-export interface NgxGwStepHistory {
+export interface INgxGwStepHistory {
   stepHistoryId: number;
   stepId: number;
   configId: number;

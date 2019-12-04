@@ -13,7 +13,7 @@
  * EffectiveDate - When this change took place.
  * ActionTaken - The database method used (inserted, deleted, updated).
  */
-export interface NgxGwConfigHistory {
+export interface INgxGwConfigHistory {
   configHistoryId: number;
   configId: number;
   code: string;

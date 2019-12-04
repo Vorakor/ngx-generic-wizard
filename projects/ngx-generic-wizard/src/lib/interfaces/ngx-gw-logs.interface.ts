@@ -7,7 +7,7 @@
  * EndTime - The timestamp when said user ended the session with said step.
  * StatusId - The final status of the step upon the end of the session.
  */
-export interface NgxGwLogs {
+export interface INgxGwLogs {
   logId: number;
   userId: number;
   stepId: number;
