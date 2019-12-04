@@ -46,6 +46,12 @@ export class NgxGenericWizardService {
   // ngxGwStepsHistory$: Observable<
   //   NgxGwStepHistory[]
   // > = this.ngxGwStepsHistory.asObservable();
+  private wizardStepStatusMap: BehaviorSubject<
+    NgxGwStepStatusMap
+  > = new BehaviorSubject<NgxGwStepStatusMap>(null);
+  wizardStepStatusMap$: Observable<
+    NgxGwStepStatusMap
+  > = this.wizardStepStatusMap.asObservable();
 
   /**
    * Functionality based behavior subjects and observables
@@ -58,12 +64,6 @@ export class NgxGenericWizardService {
     false
   );
   finalized$: Observable<boolean> = this.finalized.asObservable();
-  private wizardStepStatusMap: BehaviorSubject<
-    NgxGwStepStatusMap
-  > = new BehaviorSubject<NgxGwStepStatusMap>(null);
-  wizardStepStatusMap$: Observable<
-    NgxGwStepStatusMap
-  > = this.wizardStepStatusMap.asObservable();
   subs: Subscription[] = [];
   constructor(private router: Router) {}
 
