@@ -1,3 +1,5 @@
+import { INgxGwStepStatus } from './ngx-gw-step-status.interface';
+
 /**
  * Explanation of fields
  * StepId - The identifier for this row.
@@ -11,14 +13,43 @@
  * IgnoreIncomplete -
  * Icon - Basically if you want to have an icon display in the step box.
  */
-export interface NgxGwStep {
-  stepId: number;
-  configId: number;
-  statusId: number;
-  code: string;
-  description: string;
-  stepOrder: number;
-  stepUrl: string;
-  ignoreIncomplete: boolean;
-  icon: string;
+export interface INgxGwStep {
+  stepId?: number;
+  configId?: number;
+  status?: INgxGwStepStatus;
+  code?: string;
+  description?: string;
+  stepOrder?: number;
+  stepUrl?: string;
+  ignoreIncomplete?: boolean;
+  icon?: string;
+  Compare?(a: INgxGwStep, b: INgxGwStep): boolean;
+}
+
+export class NgxGwStep implements INgxGwStep {
+  Compare = (a: INgxGwStep, b: INgxGwStep) => {
+    let same = true;
+    if (a.stepId !== b.stepId) {
+      same = false;
+    }
+    if (a.configId !== b.configId) {
+      same = false;
+    }
+    if (a.code !== b.code) {
+      same = false;
+    }
+    if (a.description !== b.description) {
+      same = false;
+    }
+    if (a.stepUrl !== b.stepUrl) {
+      same = false;
+    }
+    if (a.ignoreIncomplete !== b.ignoreIncomplete) {
+      same = false;
+    }
+    if (a.icon !== b.icon) {
+      same = false;
+    }
+    return same;
+  };
 }

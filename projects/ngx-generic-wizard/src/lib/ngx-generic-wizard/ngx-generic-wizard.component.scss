@@ -1,4 +1,4 @@
-.wizard-container {
+.ngx-gw-container {
   height: 100px;
   line-height: 100px;
   margin-bottom: 20px;
@@ -9,11 +9,11 @@
   }
 }
 
-.wizard-text-center {
+.ngx-gw-text-center {
   text-align: center !important;
 }
 
-.wizard-row {
+.ngx-gw-row {
   display: -webkit-box;
   display: flex;
   flex-wrap: wrap;
@@ -21,4 +21,52 @@
   margin-left: -15px;
   -webkit-box-pack: center !important;
   justify-content: center !important;
+}
+
+.ngx-gw-col-line {
+  display: none;
+  @media (max-width: 992px) {
+    display: block !important;
+  }
+}
+
+.ngx-gw-col-lg-auto {
+  @media (min-width: 992px) {
+    -webkit-box-flex: 0;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+.ngx-gw-col {
+  flex-basis: 0;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+.ngx-gw-col-12 {
+  -webkit-box-flex: 0;
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.ngx-gw.col,
+.ngx-gw-col-1,
+.ngx-gw-col-2,
+.ngx-gw-col-3,
+.ngx-gw-col-4,
+.ngx-gw-col-5,
+.ngx-gw-col-6,
+.ngx-gw-col-7,
+.ngx-gw-col-8,
+.ngx-gw-col-9,
+.ngx-gw-col-10,
+.ngx-gw-col-11,
+.ngx-gw-col-12 {
+  position: relative;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
 }
