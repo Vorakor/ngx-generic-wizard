@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { INgxGwConfig, NgxGenericWizardService } from '../../public-api';
 
 @Component({
-  selector: 'lib-ngx-generic-wizard-button-container',
+  selector: 'ngx-gw-button-container',
   templateUrl: './ngx-generic-wizard-button-container.component.html',
-  styleUrls: ['./ngx-generic-wizard-button-container.component.css']
+  styleUrls: ['./ngx-generic-wizard-button-container.component.scss']
 })
-export class NgxGenericWizardButtonContainerComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class NgxGenericWizardButtonContainerComponent {
+  @Input() config: INgxGwConfig;
+  constructor(private ngxGwService: NgxGenericWizardService) {}
 }
