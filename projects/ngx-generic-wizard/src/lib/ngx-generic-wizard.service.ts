@@ -5,12 +5,11 @@ import {
   INgxGwStep,
   NgxGwStep,
   INgxGwConfig,
+  NgxGwConfig,
   NgxGwConfigHistory,
   NgxGwStepHistory,
   NgxGwLogs,
-  INgxGwStepStatus,
-  NgxGwStepStatusMap,
-  NgxGwConfig
+  NgxGwStepStatusMap
 } from './interfaces';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
