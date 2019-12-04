@@ -3,10 +3,10 @@ import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
 
 @Component({
   selector: 'ngx-gw-container',
-  templateUrl: './ngx-generic-wizard.component.html',
-  styleUrls: ['./ngx-generic-wizard.component.scss']
+  templateUrl: './ngx-generic-wizard-step-container.component.html',
+  styleUrls: ['./ngx-generic-wizard-step-container.component.scss']
 })
-export class NgxGenericWizardComponent {
+export class NgxGenericWizardStepContainerComponent {
   constructor(private ngxGwService: NgxGenericWizardService) {}
 
   navigate(event) {

@@ -1,1 +1,8 @@
-<p>ngx-gw-prev-btn works!</p>
+<button
+  type="button"
+  class="wizard-btn wizard-btn-primary"
+  (click)="wizardService.next()"
+  *ngIf="showBtn"
+>
+  {{ btnText }}
+</button>

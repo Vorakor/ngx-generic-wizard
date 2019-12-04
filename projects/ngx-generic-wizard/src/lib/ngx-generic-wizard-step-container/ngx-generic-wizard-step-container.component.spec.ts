@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NgxGenericWizardComponent } from './ngx-generic-wizard.component';
+import { NgxGenericWizardStepContainerComponent } from './ngx-generic-wizard-step-container.component';
 
 describe('NgxGenericWizardComponent', () => {
-  let component: NgxGenericWizardComponent;
-  let fixture: ComponentFixture<NgxGenericWizardComponent>;
+  let component: NgxGenericWizardStepContainerComponent;
+  let fixture: ComponentFixture<NgxGenericWizardStepContainerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NgxGenericWizardComponent]
+      declarations: [NgxGenericWizardStepContainerComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NgxGenericWizardComponent);
+    fixture = TestBed.createComponent(NgxGenericWizardStepContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
