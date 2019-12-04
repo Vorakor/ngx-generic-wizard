@@ -40,13 +40,6 @@ export class NgxGenericWizardService {
     INgxGwStep[]
   >(null);
   ngxGwSteps$: Observable<INgxGwStep[]> = this.ngxGwSteps.asObservable();
-  // Turn the map into an observable instead of using this thing...
-  private ngxGwStatuses: BehaviorSubject<
-    INgxGwStepStatus[]
-  > = new BehaviorSubject<INgxGwStepStatus[]>(null);
-  ngxGwStatuses$: Observable<
-    INgxGwStepStatus[]
-  > = this.ngxGwStatuses.asObservable();
   // Part of admin type pages and functionality that will be built later
   // private ngxGwStepsHistory: BehaviorSubject<
   //   NgxGwStepHistory[]
@@ -66,7 +59,12 @@ export class NgxGenericWizardService {
     false
   );
   finalized$: Observable<boolean> = this.finalized.asObservable();
-  wizardStepStatusMap: NgxGwStepStatusMap;
+  private wizardStepStatusMap: BehaviorSubject<
+    NgxGwStepStatusMap
+  > = new BehaviorSubject<NgxGwStepStatusMap>(null);
+  wizardStepStatusMap$: Observable<
+    NgxGwStepStatusMap
+  > = this.wizardStepStatusMap.asObservable();
   subs: Subscription[] = [];
   constructor(private router: Router) {}
 
@@ -91,7 +89,7 @@ export class NgxGenericWizardService {
     externalDataLoaded$: Observable<boolean>,
     externalDataCurrentStep$: Observable<INgxGwStep>
   ) {
-    this.wizardStepStatusMap = statusMap;
+    this.wizardStepStatusMap.next(statusMap);
     const exDaLoad = externalDataLoaded$.subscribe(loaded => {
       if (!loaded) {
         throw new Error(
@@ -100,11 +98,6 @@ export class NgxGenericWizardService {
       }
     });
     this.addSubscription(exDaLoad);
-    const statuses: INgxGwStepStatus[] = [];
-    Object.keys(statusMap).forEach(status => {
-      statuses.push(statusMap[status]);
-    });
-    this.ngxGwStatuses.next(statuses);
     const curStep = externalDataCurrentStep$
       .pipe(
         distinctUntilChanged(),
@@ -254,12 +247,12 @@ export class NgxGenericWizardService {
       steps.map(step => step.stepOrder)
     );
     const currentStep = steps.filter(
-      step => step.status.code === this.wizardStepStatusMap.current.code
+      step => step.status.code === this.wizardStepStatusMap.value.current.code
     )[0];
     if (currentStep.stepOrder === maxOrder) {
       steps.filter(
-        step => step.status.code === this.wizardStepStatusMap.current.code
-      )[0].status = this.wizardStepStatusMap.complete;
+        step => step.status.code === this.wizardStepStatusMap.value.current.code
+      )[0].status = this.wizardStepStatusMap.value.complete;
       this.ngxGwSteps.next([...otherSteps, ...steps]);
       this.finalized.next(true);
       this.router.navigate([config.finalizeUrl]);
@@ -268,7 +261,7 @@ export class NgxGenericWizardService {
       let nextStep: INgxGwStep;
       const incompSteps = steps.filter(
         step =>
-          step.status.code === this.wizardStepStatusMap.incomplete.code &&
+          step.status.code === this.wizardStepStatusMap.value.incomplete.code &&
           step.stepOrder > currentStep.stepOrder
       );
       if (incompSteps.length > 0) {
@@ -280,7 +273,7 @@ export class NgxGenericWizardService {
       } else {
         const initSteps = steps.filter(
           step =>
-            step.status.code === this.wizardStepStatusMap.initial.code &&
+            step.status.code === this.wizardStepStatusMap.value.initial.code &&
             step.stepOrder > currentStep.stepOrder
         );
         if (initSteps.length > 0) {
@@ -292,7 +285,8 @@ export class NgxGenericWizardService {
         } else {
           const compSteps = steps.filter(
             step =>
-              step.status.code === this.wizardStepStatusMap.complete.code &&
+              step.status.code ===
+                this.wizardStepStatusMap.value.complete.code &&
               step.stepOrder > currentStep.stepOrder
           );
           minOrder = Math.min.apply(
@@ -326,7 +320,7 @@ export class NgxGenericWizardService {
       steps.map(step => step.stepOrder)
     );
     const currentStep = steps.filter(
-      step => step.status.code === this.wizardStepStatusMap.current.code
+      step => step.status.code === this.wizardStepStatusMap.value.current.code
     )[0];
     if (currentStep.stepOrder === minOrder) {
       // We cannot go beyond the first step of the process
@@ -336,7 +330,7 @@ export class NgxGenericWizardService {
       let nextStep: INgxGwStep;
       const incompSteps = steps.filter(
         step =>
-          step.status.code === this.wizardStepStatusMap.incomplete.code &&
+          step.status.code === this.wizardStepStatusMap.value.incomplete.code &&
           step.stepOrder < currentStep.stepOrder
       );
       if (incompSteps.length > 0) {
@@ -348,7 +342,7 @@ export class NgxGenericWizardService {
       } else {
         const compSteps = steps.filter(
           step =>
-            step.status.code === this.wizardStepStatusMap.complete.code &&
+            step.status.code === this.wizardStepStatusMap.value.complete.code &&
             step.stepOrder < currentStep.stepOrder
         );
         prevOrder = Math.max.apply(
@@ -413,19 +407,19 @@ export class NgxGenericWizardService {
     const init = this.initialized$.subscribe(initialized => {
       responseSteps.filter(
         st => st.stepOrder === nextStep.stepOrder
-      )[0].status = this.wizardStepStatusMap.current;
+      )[0].status = this.wizardStepStatusMap.value.current;
       if (initialized) {
         responseSteps
           .filter(
             st =>
-              st.status === this.wizardStepStatusMap.current &&
+              st.status === this.wizardStepStatusMap.value.current &&
               st.stepId !== nextStep.stepId
           )
           .map(st => {
             if (!prevComplete) {
-              st.status = this.wizardStepStatusMap.incomplete;
+              st.status = this.wizardStepStatusMap.value.incomplete;
             } else {
-              st.status = this.wizardStepStatusMap.complete;
+              st.status = this.wizardStepStatusMap.value.complete;
             }
             return st;
           });
@@ -434,15 +428,15 @@ export class NgxGenericWizardService {
           .filter(st => st.stepOrder < nextStep.stepOrder)
           .map(st => {
             if (!prevComplete) {
-              st.status = this.wizardStepStatusMap.incomplete;
+              st.status = this.wizardStepStatusMap.value.incomplete;
             } else {
-              st.status = this.wizardStepStatusMap.complete;
+              st.status = this.wizardStepStatusMap.value.complete;
             }
             return st;
           });
         responseSteps
           .filter(st => st.stepOrder > nextStep.stepOrder)
-          .map(st => (st.status = this.wizardStepStatusMap.initial));
+          .map(st => (st.status = this.wizardStepStatusMap.value.initial));
       }
     });
     this.addSubscription(init);
@@ -466,7 +460,7 @@ export class NgxGenericWizardService {
     );
     resetSteps.filter(
       step => step.stepOrder === 1
-    )[0].status = this.wizardStepStatusMap.current;
+    )[0].status = this.wizardStepStatusMap.value.current;
     this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
     return;
   }
