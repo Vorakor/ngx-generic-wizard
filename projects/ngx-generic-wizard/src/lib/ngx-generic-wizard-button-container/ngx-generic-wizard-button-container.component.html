@@ -1,8 +1,20 @@
 <div class="ngx-gw-row">
-  <div class="ngx-gw-col">
-    <ngx-gw-prev-btn [configId]="config.configId"></ngx-gw-prev-btn>
+  <div class="ngx-gw-col" *ngIf="!(finalize$ | async)">
+    <ngx-gw-action-btn
+      [actionType]="'next'"
+      (action)="action($event)"
+    ></ngx-gw-action-btn>
   </div>
-  <div class="ngx-gw-col">
-    <ngx-gw-next-btn [configId]="config.configId"></ngx-gw-next-btn>
+  <div class="ngx-gw-col" *ngIf="!(finalize$ | async)">
+    <ngx-gw-action-btn
+      [actionType]="'previous'"
+      (action)="action($event)"
+    ></ngx-gw-action-btn>
+  </div>
+  <div class="ngx-gw-col" *ngIf="finalize$ | async">
+    <ngx-gw-action-btn
+      [actionType]="'reenter'"
+      (action)="action($event)"
+    ></ngx-gw-action-btn>
   </div>
 </div>

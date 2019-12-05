@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NgxGwNextBtnComponent } from './ngx-gw-next-btn.component';
+import { NgxGwActionBtnComponent } from './ngx-gw-action-btn.component';
 
-describe('NgxGwNextBtnComponent', () => {
-  let component: NgxGwNextBtnComponent;
-  let fixture: ComponentFixture<NgxGwNextBtnComponent>;
+describe('NgxGwActionBtnComponent', () => {
+  let component: NgxGwActionBtnComponent;
+  let fixture: ComponentFixture<NgxGwActionBtnComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NgxGwNextBtnComponent ]
+      declarations: [ NgxGwActionBtnComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NgxGwNextBtnComponent);
+    fixture = TestBed.createComponent(NgxGwActionBtnComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="wizard-btn"
+  [ngClass]="
+    actionType === 'next' || actionType === 'reenter'
+      ? 'wizard-btn-primary'
+      : 'wizard-btn-secondary'
+  "
+  (click)="actionEmit()"
+>
+  {{ btnText }}
+</button>
