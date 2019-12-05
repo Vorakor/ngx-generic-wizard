@@ -1,1 +1,9 @@
-<p>ngx-gw-step works!</p>
+<button
+  type="button"
+  class="wizard-step-btn wizard-btn wizard-btn-link wizard-btn-block wizard-btn-lg"
+  (click)="route()"
+>
+  <span>{{ step.stepOrder }}</span>
+  {{ step.description }}
+  <i></i>
+</button>

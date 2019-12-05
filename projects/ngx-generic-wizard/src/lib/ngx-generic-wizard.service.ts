@@ -76,11 +76,7 @@ export class NgxGenericWizardService {
 
   /**
    * This sets up the wizard and gets everything ready to use.
-   * @param config INgxGwConfig
-   * @param steps INgxGwStep[]
-   * @param statusMap NgxStepStatusMap
-   * @param externalDataLoaded$ Observable<boolean>
-   * @param externalDataCurrentStep$ Observable<INgxGwStep>
+   *
    * We need the user to pass in the config, steps, and status map, as well as whether or not all necessary
    * data is loaded for the wizard to use and the current step we need to start on.
    *
@@ -134,8 +130,7 @@ export class NgxGenericWizardService {
   /**
    * This function adds steps to either an existing configuration or adds the new configuration and the new
    * steps for said configuration.
-   * @param steps INgxGwStep[]
-   * @param config INgxGwConfig
+   *
    * If config is null then we're expecting that the config is already in the list of configurations.
    */
   addSteps(steps: INgxGwStep[], config: INgxGwConfig = null) {
@@ -202,7 +197,7 @@ export class NgxGenericWizardService {
 
   /**
    * This function removes steps from a configuration.
-   * @param steps INgxGwStep[]
+   *
    * We are not passing in a configuration here because we're expecting that the configuration is in the
    * list already, however, if we can't find a configuration... well, can't remove steps from a
    * configuration that isn't in the list in the first place.
@@ -247,7 +242,7 @@ export class NgxGenericWizardService {
   /**
    * This function advances our UI to the next step of the wizard assuming that the previous step was
    * completed successfully.
-   * @param config INgxGwConfig
+   *
    * We need to pass in the config here in case we have a couple wizards going.
    */
   next(config: INgxGwConfig) {
@@ -320,7 +315,7 @@ export class NgxGenericWizardService {
   /**
    * This function advances our UI to the previous step of the wizard, assuming that the previous step
    * was not completed
-   * @param config INgxGwConfig
+   *
    * Again we have to pass in the config to determine which wizard we need to act on.
    */
   prev(config: INgxGwConfig) {
@@ -373,9 +368,7 @@ export class NgxGenericWizardService {
 
   /**
    * This function is meant to route to the step that we've selected.
-   * @param step INgxGwStep
-   * @param next Boolean
-   * @param navForward Boolean
+   *
    * Set navForward to true on steps that we click on that are labeled as incomplete as
    * long as their step order is greater than the current step.
    *
@@ -402,8 +395,7 @@ export class NgxGenericWizardService {
 
   /**
    * Given the next step we're planning to advance to, this takes care of setting our steps' status.
-   * @param nextStep INgxGwStep
-   * @param prevComplete Boolean
+   *
    * PrevComplete will default to true and should be true if we're advancing due to clicking the 'next'
    * button, there are other conditions where this will be true too though.
    *
@@ -461,7 +453,7 @@ export class NgxGenericWizardService {
 
   /**
    * This function let's us go back into the wizard after we've completed it.
-   * @param config INgxGwConfig
+   *
    * We're passing in the config of the wizard we want to get back into.
    */
   resetFinalized(config: INgxGwConfig) {
@@ -482,7 +474,9 @@ export class NgxGenericWizardService {
 
   /**
    * This function is only for cleanup purposes.
-   * @param subscription Subscription
+   *
+   * Passing in a subscription adds the subscription to the subs array,
+   * then calling {@link destroyWizard()} will destroy all of the subscriptions.
    */
   addSubscription(subscription: Subscription) {
     this.subs.push(subscription);

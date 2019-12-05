@@ -8,6 +8,7 @@ import { NgxGenericWizardService } from './ngx-generic-wizard.service';
 import { CommonModule } from '@angular/common';
 // tslint:disable-next-line: max-line-length
 import { NgxGenericWizardButtonContainerComponent } from './ngx-generic-wizard-button-container/ngx-generic-wizard-button-container.component';
+import { NgxGenericWizardWidgetComponent } from './ngx-generic-wizard-widget/ngx-generic-wizard-widget.component';
 
 @NgModule({
   declarations: [
@@ -16,12 +17,14 @@ import { NgxGenericWizardButtonContainerComponent } from './ngx-generic-wizard-b
     NgxGwStepComponent,
     NgxGwNextBtnComponent,
     NgxGwPrevBtnComponent,
-    NgxGenericWizardButtonContainerComponent
+    NgxGenericWizardButtonContainerComponent,
+    NgxGenericWizardWidgetComponent
   ],
   imports: [CommonModule],
   exports: [
     NgxGenericWizardStepContainerComponent,
-    NgxGenericWizardButtonContainerComponent
+    NgxGenericWizardButtonContainerComponent,
+    NgxGenericWizardWidgetComponent
   ],
   providers: [NgxGenericWizardService]
 })

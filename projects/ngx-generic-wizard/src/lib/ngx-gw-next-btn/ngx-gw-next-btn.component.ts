@@ -11,15 +11,15 @@ import { NgxGenericWizardService } from '../../public-api';
 export class NgxGwNextBtnComponent implements OnInit {
   @Input() configId: number;
   btnText = 'Next';
-  constructor(public wizardService: NgxGenericWizardService) {}
+  constructor(public ngxGwService: NgxGenericWizardService) {}
 
   ngOnInit() {
     if (!this.configId || this.configId === 0) {
       throw new Error('Previous button needs an assigned configuration!');
     }
     combineLatest(
-      this.wizardService.ngxGwSteps$,
-      this.wizardService.wizardStepStatusMap$
+      this.ngxGwService.ngxGwSteps$,
+      this.ngxGwService.wizardStepStatusMap$
     )
       .pipe(
         map(([steps, statusMap]) => ({ Steps: steps, StatusMap: statusMap }))

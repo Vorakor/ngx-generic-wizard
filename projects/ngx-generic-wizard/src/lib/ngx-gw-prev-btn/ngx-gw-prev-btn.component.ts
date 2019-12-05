@@ -12,17 +12,17 @@ export class NgxGwPrevBtnComponent implements OnInit {
   @Input() configId: number;
   btnText = 'Previous';
   showBtn = true;
-  constructor(public wizardService: NgxGenericWizardService) {}
+  constructor(public ngxGwService: NgxGenericWizardService) {}
 
   ngOnInit() {
     if (!this.configId || this.configId === 0) {
       throw new Error('Previous button needs an assigned configuration!');
     }
     combineLatest(
-      this.wizardService.ngxGwSteps$.pipe(
+      this.ngxGwService.ngxGwSteps$.pipe(
         map(steps => steps.filter(step => step.configId === this.configId))
       ),
-      this.wizardService.wizardStepStatusMap$
+      this.ngxGwService.wizardStepStatusMap$
     )
       .pipe(
         map(([steps, statusMap]) => ({ Steps: steps, StatusMap: statusMap }))

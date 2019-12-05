@@ -10,6 +10,6 @@ export class NgxGenericWizardStepContainerComponent {
   constructor(private ngxGwService: NgxGenericWizardService) {}
 
   navigate(event) {
-    // this.ngxGwService.navigateToStep(event);
+    this.ngxGwService.navigateToStep(event);
   }
 }
