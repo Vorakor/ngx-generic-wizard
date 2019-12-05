@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgxGenericWizardService } from '../../public-api';
 import { Observable } from 'rxjs';
 import { INgxGwStep } from '../interfaces';
+import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
 
 @Component({
   selector: 'ngx-gw-step-container',

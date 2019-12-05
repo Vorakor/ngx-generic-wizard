@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { INgxGwConfig, NgxGenericWizardService } from '../../public-api';
 import { Observable, combineLatest } from 'rxjs';
 import { map, distinctUntilChanged } from 'rxjs/operators';
+import { INgxGwConfig } from '../interfaces';
+import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
 
 @Component({
   selector: 'ngx-gw-button-container',
