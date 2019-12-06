@@ -20,8 +20,16 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit {
 
   ngOnInit() {
     if (!this.config) {
-      throw new Error('Button container needs an assigned configuration');
+      throw new Error(
+        'Wizard Button Container needs an assigned configuration'
+      );
     }
+    const wzStepSub = this.ngxGwService.initialized$.subscribe(init => {
+      if (!init) {
+        throw new Error('Need to initialize the wizard generator!');
+      }
+    });
+    this.ngxGwService.addSubscription(wzStepSub);
     this.prevBtnText = 'Previous';
     this.reenterBtnText = 'Re-enter Wizard';
     const wzBtnSub = combineLatest(

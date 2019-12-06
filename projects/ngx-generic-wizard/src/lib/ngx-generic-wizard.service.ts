@@ -84,7 +84,7 @@ export class NgxGenericWizardService {
    * the same order or with the same naming and such that the wizard could be hard-coded to expect, so
    * instead, give it a map so it will set the statuses correctly for each step.
    */
-  initializeStepper(
+  initializeWizard(
     config: INgxGwConfig,
     steps: INgxGwStep[],
     statusMap: INgxGwStepStatusMap,

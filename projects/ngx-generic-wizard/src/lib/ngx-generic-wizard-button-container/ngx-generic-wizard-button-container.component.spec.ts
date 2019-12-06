@@ -1,25 +1,68 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { NgxGenericWizardButtonContainerComponent } from './ngx-generic-wizard-button-container.component';
+import { NgxGwActionBtnComponent } from '../ngx-gw-action-btn/ngx-gw-action-btn.component';
+import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { INgxGwStep, INgxGwStepStatusMap, INgxGwConfig } from '../interfaces';
+import { CommonModule } from '@angular/common';
+
+class MockNgxGwService {
+  ngxGwSteps$: Observable<INgxGwStep[]> = new BehaviorSubject<INgxGwStep[]>([
+    {
+      stepId: 0,
+      configId: 0,
+      status: {
+        statusId: 0,
+        code: 'CD',
+        description: 'Code'
+      },
+      code: 'ST',
+      description: 'step',
+      stepOrder: 1,
+      stepUrl: 'sample',
+      ignoreIncomplete: false,
+      icon: ''
+    }
+  ]).asObservable();
+  initialized$: Observable<boolean> = new BehaviorSubject<boolean>(
+    true
+  ).asObservable();
+  finalized$: Observable<boolean> = new BehaviorSubject<boolean>(
+    false
+  ).asObservable();
+  wizardStepStatusMap$: Observable<INgxGwStepStatusMap[]> = new BehaviorSubject<
+    INgxGwStepStatusMap[]
+  >([]).asObservable();
+  addSubscription = (sub: Subscription) => {};
+  next = (config: INgxGwConfig) => {};
+  prev = (config: INgxGwConfig) => {};
+  resetFinalized = (config: INgxGwConfig) => {};
+}
 
 describe('NgxGenericWizardButtonContainerComponent', () => {
   let component: NgxGenericWizardButtonContainerComponent;
-  let fixture: ComponentFixture<NgxGenericWizardButtonContainerComponent>;
+  let ngxGwService: NgxGenericWizardService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NgxGenericWizardButtonContainerComponent ]
-    })
-    .compileComponents();
+      declarations: [
+        NgxGenericWizardButtonContainerComponent,
+        NgxGwActionBtnComponent
+      ],
+      imports: [RouterTestingModule, { ngModule: CommonModule }],
+      providers: [
+        NgxGenericWizardButtonContainerComponent,
+        { provide: NgxGenericWizardService, useClass: MockNgxGwService }
+      ]
+    });
+    component = TestBed.get(NgxGenericWizardButtonContainerComponent);
+    ngxGwService = TestBed.get(NgxGenericWizardService);
   }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(NgxGenericWizardButtonContainerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  // tslint:disable-next-line: quotemark
+  it("shouldn't create NgxGwButtonContainerComponent without config defined.", () => {
+    expect(component.config).toBeUndefined();
     expect(component).toBeTruthy();
   });
 });

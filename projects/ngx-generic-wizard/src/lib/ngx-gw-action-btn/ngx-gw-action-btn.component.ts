@@ -14,7 +14,7 @@ import {
 })
 export class NgxGwActionBtnComponent implements OnChanges {
   @Input() actionType: 'next' | 'previous' | 'reenter';
-  @Input() btnText: string;
+  @Input() btnText = '';
   @Output() action: EventEmitter<string> = new EventEmitter<string>(null);
   btnLabel = '';
 
