@@ -8,6 +8,7 @@ import { NgxGenericWizardWidgetComponent } from './ngx-generic-wizard-widget/ngx
 import { NgxGwActionBtnComponent } from './ngx-gw-action-btn/ngx-gw-action-btn.component';
 import { NgxGwLineComponent } from './ngx-gw-line/ngx-gw-line.component';
 import { NgxGwStepComponent } from './ngx-gw-step/ngx-gw-step.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -18,11 +19,12 @@ import { NgxGwStepComponent } from './ngx-gw-step/ngx-gw-step.component';
     NgxGwLineComponent,
     NgxGwStepComponent
   ],
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule.forChild([])],
   exports: [
     NgxGenericWizardButtonContainerComponent,
     NgxGenericWizardStepContainerComponent,
-    NgxGenericWizardWidgetComponent
+    NgxGenericWizardWidgetComponent,
+    RouterModule
   ],
   providers: [NgxGenericWizardService]
 })
