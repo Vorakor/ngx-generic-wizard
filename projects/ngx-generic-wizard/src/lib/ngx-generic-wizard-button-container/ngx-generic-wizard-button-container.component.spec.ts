@@ -65,4 +65,20 @@ describe('NgxGenericWizardButtonContainerComponent', () => {
     expect(component.config).toBeUndefined();
     expect(component).toBeTruthy();
   });
+
+  it('If config is defined, should create NgxGwButtonContainerComponent without errors', () => {
+    component.config = {
+      configId: 0,
+      code: 'CD',
+      description: 'Code',
+      baseUrl: 'post',
+      finalizeUrl: 'sample',
+      ignoreIncomplete: false,
+      completedDisabled: false,
+      applicationId: 0,
+      moduleId: 0
+    };
+    expect(component.config).toBeDefined();
+    expect(component).toBeTruthy();
+  });
 });

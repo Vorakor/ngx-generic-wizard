@@ -72,6 +72,7 @@ describe('NgxGenericWizardStepContainerComponent', () => {
       applicationId: 0,
       moduleId: 0
     };
+    expect(component.config).toBeDefined();
     expect(component).toBeTruthy();
   });
 });
