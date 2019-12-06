@@ -1,7 +1,10 @@
 <div class="ngx-gw-container ngx-gw-text-center">
   <div class="ngx-gw-row">
-    <ng-container *ngFor="let step of steps$ | async | keyvalue; index as i">
-      <div class="ngx-gw-col ngx-gw-col-line" *ngIf="i !== 0">
+    <ng-container *ngFor="let step of steps$ | async">
+      <div
+        class="ngx-gw-col ngx-gw-col-line"
+        *ngIf="step.stepOrder !== minOrder"
+      >
         <ngx-gw-line></ngx-gw-line>
       </div>
       <div class="ngx-gw-col-lg-auto ngx-gw-col-12">

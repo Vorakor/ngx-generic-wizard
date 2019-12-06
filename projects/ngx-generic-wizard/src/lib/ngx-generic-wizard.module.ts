@@ -23,8 +23,7 @@ import { RouterModule } from '@angular/router';
   exports: [
     NgxGenericWizardButtonContainerComponent,
     NgxGenericWizardStepContainerComponent,
-    NgxGenericWizardWidgetComponent,
-    RouterModule
+    NgxGenericWizardWidgetComponent
   ],
   providers: [NgxGenericWizardService]
 })

@@ -6,10 +6,11 @@
     "declaration": true,
     "inlineSources": true,
     "types": [],
-    "lib": [
-      "dom",
-      "es2018"
-    ]
+    "lib": ["dom", "es2018"],
+    "paths": {
+      "@ngx-generic-wizard": ["dist/ngx-generic-wizard"],
+      "@ngx-generic-wizard/*": ["dist/ngx-generic-wizard/*"]
+    }
   },
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
@@ -19,8 +20,5 @@
     "strictInjectionParameters": true,
     "enableResourceInlining": true
   },
-  "exclude": [
-    "src/test.ts",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["src/test.ts", "**/*.spec.ts"]
 }

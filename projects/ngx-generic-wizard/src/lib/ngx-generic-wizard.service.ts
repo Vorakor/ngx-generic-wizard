@@ -103,8 +103,10 @@ export class NgxGenericWizardService {
     this.addSubscription(exDaLoad);
     const curStep = externalDataCurrentStep$
       .pipe(
-        distinctUntilChanged(),
-        filter(step => step !== null)
+        filter(step => {
+          return step !== null;
+        }),
+        distinctUntilChanged()
       )
       .subscribe(step => {
         steps.sort((a, b) => a.stepOrder - b.stepOrder);
@@ -252,10 +254,7 @@ export class NgxGenericWizardService {
     const otherSteps = this.ngxGwSteps.value.filter(
       step => step.configId !== config.configId
     );
-    const maxOrder: number = Math.max.apply(
-      Math,
-      steps.map(step => step.stepOrder)
-    );
+    const maxOrder: number = this.getMaxOrder(config);
     const currentStep = steps.filter(
       step => step.status.code === this.wizardStepStatusMap.value.current.code
     )[0];
@@ -275,10 +274,7 @@ export class NgxGenericWizardService {
           step.stepOrder > currentStep.stepOrder
       );
       if (incompSteps.length > 0) {
-        minOrder = Math.min.apply(
-          Math,
-          incompSteps.map(step => step.stepOrder)
-        );
+        minOrder = this.getMinOrder(null, incompSteps);
         nextStep = steps.filter(step => step.stepOrder === minOrder)[0];
       } else {
         const initSteps = steps.filter(
@@ -287,10 +283,7 @@ export class NgxGenericWizardService {
             step.stepOrder > currentStep.stepOrder
         );
         if (initSteps.length > 0) {
-          minOrder = Math.min.apply(
-            Math,
-            initSteps.map(step => step.stepOrder)
-          );
+          minOrder = this.getMinOrder(null, initSteps);
           nextStep = steps.filter(step => step.stepOrder === minOrder)[0];
         } else {
           const compSteps = steps.filter(
@@ -299,10 +292,7 @@ export class NgxGenericWizardService {
                 this.wizardStepStatusMap.value.complete.code &&
               step.stepOrder > currentStep.stepOrder
           );
-          minOrder = Math.min.apply(
-            Math,
-            compSteps.map(step => step.stepOrder)
-          );
+          minOrder = this.getMinOrder(null, compSteps);
           nextStep = steps.filter(step => step.stepOrder === minOrder)[0];
         }
       }
@@ -325,10 +315,7 @@ export class NgxGenericWizardService {
     const otherSteps = this.ngxGwSteps.value.filter(
       step => step.configId !== config.configId
     );
-    const minOrder: number = Math.min.apply(
-      Math,
-      steps.map(step => step.stepOrder)
-    );
+    const minOrder: number = this.getMinOrder(config);
     const currentStep = steps.filter(
       step => step.status.code === this.wizardStepStatusMap.value.current.code
     )[0];
@@ -344,10 +331,7 @@ export class NgxGenericWizardService {
           step.stepOrder < currentStep.stepOrder
       );
       if (incompSteps.length > 0) {
-        prevOrder = Math.max.apply(
-          Math,
-          incompSteps.map(step => step.stepOrder)
-        );
+        prevOrder = this.getMaxOrder(null, incompSteps);
         nextStep = steps.filter(step => step.stepOrder === prevOrder)[0];
       } else {
         const compSteps = steps.filter(
@@ -355,10 +339,7 @@ export class NgxGenericWizardService {
             step.status.code === this.wizardStepStatusMap.value.complete.code &&
             step.stepOrder < currentStep.stepOrder
         );
-        prevOrder = Math.max.apply(
-          Math,
-          compSteps.map(step => step.stepOrder)
-        );
+        prevOrder = this.getMaxOrder(null, compSteps);
         nextStep = steps.filter(step => step.stepOrder === prevOrder)[0];
       }
       this.navigateToStep(nextStep);
@@ -499,6 +480,36 @@ export class NgxGenericWizardService {
 
   setDefaultColorScheme() {
     // Insert template color scheme (not attached to a config)
+  }
+
+  getMinOrder(config?: INgxGwConfig, steps?: INgxGwStep[]): number {
+    let allSteps: INgxGwStep[] = [];
+    if (config) {
+      allSteps = this.ngxGwSteps.value.filter(
+        rst => rst.configId === config.configId
+      );
+    } else if (steps) {
+      allSteps = steps;
+    }
+    return Math.min.apply(
+      Math,
+      allSteps.map(step => step.stepOrder)
+    );
+  }
+
+  getMaxOrder(config?: INgxGwConfig, steps?: INgxGwStep[]): number {
+    let allSteps: INgxGwStep[] = [];
+    if (config) {
+      allSteps = this.ngxGwSteps.value.filter(
+        rst => rst.configId === config.configId
+      );
+    } else if (steps) {
+      allSteps = steps;
+    }
+    return Math.max.apply(
+      Math,
+      allSteps.map(step => step.stepOrder)
+    );
   }
 
   destroyWizard() {
