@@ -28,6 +28,8 @@ import { NgxGenericWizardModule, NgxGenericWizardService } from 'ngx-generic-wiz
         ...
     ],
     providers: [NgxGenericWizardService] // And don't forget this!
+})
+export class AppModule {}
 ```
 
 You need to ensure that you do actually add the service as NgxGenericWizard won't work without it, that service is necessary to handle the extremely complex interaction between steps and the application that's using the wizard.
