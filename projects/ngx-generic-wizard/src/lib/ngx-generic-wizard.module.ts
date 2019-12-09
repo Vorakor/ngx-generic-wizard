@@ -11,20 +11,20 @@ import { NgxGwStepComponent } from './ngx-gw-step/ngx-gw-step.component';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
-  declarations: [
-    NgxGenericWizardButtonContainerComponent,
-    NgxGenericWizardStepContainerComponent,
-    NgxGenericWizardWidgetComponent,
-    NgxGwActionBtnComponent,
-    NgxGwLineComponent,
-    NgxGwStepComponent
-  ],
-  imports: [CommonModule, RouterModule.forChild([])],
-  exports: [
-    NgxGenericWizardButtonContainerComponent,
-    NgxGenericWizardStepContainerComponent,
-    NgxGenericWizardWidgetComponent
-  ],
-  providers: [NgxGenericWizardService]
+    declarations: [
+        NgxGenericWizardButtonContainerComponent,
+        NgxGenericWizardStepContainerComponent,
+        NgxGenericWizardWidgetComponent,
+        NgxGwActionBtnComponent,
+        NgxGwLineComponent,
+        NgxGwStepComponent
+    ],
+    imports: [CommonModule, RouterModule.forChild([])],
+    providers: [NgxGenericWizardService],
+    exports: [
+        NgxGenericWizardButtonContainerComponent,
+        NgxGenericWizardStepContainerComponent,
+        NgxGenericWizardWidgetComponent
+    ]
 })
 export class NgxGenericWizardModule {}
