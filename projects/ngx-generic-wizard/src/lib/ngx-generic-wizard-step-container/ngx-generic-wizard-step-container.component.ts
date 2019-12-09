@@ -11,6 +11,7 @@ import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 })
 export class NgxGenericWizardStepContainerComponent implements OnInit {
   @Input() config: INgxGwConfig;
+  finalize$: Observable<boolean> = this.ngxGwService.finalized$;
   steps$: Observable<INgxGwStep[]> = this.ngxGwService.ngxGwSteps$;
   minOrder = 0;
   constructor(private ngxGwService: NgxGenericWizardService) {}

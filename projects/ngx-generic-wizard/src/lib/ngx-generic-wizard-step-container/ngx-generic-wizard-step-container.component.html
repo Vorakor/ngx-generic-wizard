@@ -1,4 +1,4 @@
-<div class="ngx-gw-container ngx-gw-text-center">
+<div class="ngx-gw-container ngx-gw-text-center" *ngIf="!(finalize$ | async)">
   <div class="ngx-gw-row">
     <ng-container *ngFor="let step of steps$ | async">
       <div class="ngx-gw-col ngx-gw-line" *ngIf="step.stepOrder !== minOrder">

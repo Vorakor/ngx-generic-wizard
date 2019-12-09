@@ -1,10 +1,10 @@
 <button
   type="button"
-  class="wizard-btn"
+  class="ngx-gw-action-btn"
   [ngClass]="
     actionType === 'next' || actionType === 'reenter'
-      ? 'wizard-btn-primary'
-      : 'wizard-btn-secondary'
+      ? 'ngx-gw-action-btn-primary'
+      : 'ngx-gw-action-btn-secondary'
   "
   (click)="actionEmit()"
 >

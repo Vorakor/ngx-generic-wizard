@@ -1,10 +1,16 @@
-.wizard-btn-primary {
+.ngx-gw-action-btn {
+  min-width: 100px;
+  border: none;
+  border-radius: 5px;
+}
+
+.ngx-gw-action-btn-primary {
   color: #fff;
   background-color: #28a745;
   border-color: #28a745;
 }
 
-.wizard-btn-secondary {
+.ngx-gw-action-btn-secondary {
   color: #fff;
   background-color: #007bff;
   border-color: #007bff;

@@ -450,6 +450,8 @@ export class NgxGenericWizardService {
       step => step.stepOrder === 1
     )[0].status = this.wizardStepStatusMap.value.current;
     this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
+    const current = resetSteps.filter(step => step.stepOrder === 1)[0];
+    this.navigateToStep(current);
     return;
   }
 

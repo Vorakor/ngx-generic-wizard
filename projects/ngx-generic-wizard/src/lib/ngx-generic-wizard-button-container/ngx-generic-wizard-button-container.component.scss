@@ -13,7 +13,7 @@
 .ngx-gw-row {
   display: flex;
   flex-direction: row;
-  width: 50%;
+  width: 100%;
   @media screen and (max-width: 992px) {
     flex-direction: column;
   }
@@ -21,4 +21,13 @@
 
 .ngx-gw-col {
   flex: 1;
+}
+
+.ngx-gw-next-btn {
+  text-align: right;
+  padding-right: 5px;
+}
+.ngx-gw-prev-btn {
+  text-align: left;
+  padding-left: 5px;
 }
