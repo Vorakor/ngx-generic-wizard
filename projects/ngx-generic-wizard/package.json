@@ -1,6 +1,9 @@
 {
   "name": "ngx-generic-wizard",
-  "version": "0.0.1",
+  "version": "0.1.1",
+  "scripts": {
+    "build": "ng-packagr -p package.json"
+  },
   "peerDependencies": {
     "@angular/animations": "^8.2.14",
     "@angular/cdk": "^8.2.3",
