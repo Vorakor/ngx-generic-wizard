@@ -44,3 +44,7 @@ TODO:
 -   Move repo to workspace repo.
 -   Create new sub-repo for this lib.
 -   Add ngx-dynamic-forms as another sub-repo for workspace.
+
+## Notes
+
+If you accidentally installed version 0.1.0 of NgxGenericWizard, please install a later version as that version will not work.
