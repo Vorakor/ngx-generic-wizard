@@ -1,41 +1,24 @@
+.ngx-gw-container {
+  display: block;
+  height: 36px;
+  line-height: 36px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.ngx-gw-text-center {
+  text-align: center !important;
+}
+
 .ngx-gw-row {
-  display: -webkit-box;
   display: flex;
-  flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
-  -webkit-box-pack: center !important;
-  justify-content: center !important;
+  flex-direction: row;
+  width: 50%;
+  @media screen and (max-width: 992px) {
+    flex-direction: column;
+  }
 }
 
 .ngx-gw-col {
-  flex-basis: 0;
-  -webkit-box-flex: 1;
-  flex-grow: 1;
-  max-width: 100%;
-}
-
-.ngx-gw-col-12 {
-  -webkit-box-flex: 0;
-  flex: 0 0 100%;
-  max-width: 100%;
-}
-
-.ngx-gw.col,
-.ngx-gw-col-1,
-.ngx-gw-col-2,
-.ngx-gw-col-3,
-.ngx-gw-col-4,
-.ngx-gw-col-5,
-.ngx-gw-col-6,
-.ngx-gw-col-7,
-.ngx-gw-col-8,
-.ngx-gw-col-9,
-.ngx-gw-col-10,
-.ngx-gw-col-11,
-.ngx-gw-col-12 {
-  position: relative;
-  width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
+  flex: 1;
 }

@@ -1,9 +1,7 @@
-<button
-  type="button"
-  class="wizard-step-btn wizard-btn wizard-btn-link wizard-btn-block wizard-btn-lg"
-  (click)="route()"
->
-  <span>{{ step?.stepOrder }}</span>
-  {{ step?.description }}
-  <i></i>
+<button type="button" class="ngx-gw-step-button" (click)="route()">
+  <div class="ngx-gw-row">
+    <div class="ngx-gw-badge">{{ step?.stepOrder }}</div>
+    <div class="ngx-gw-step-button-text">{{ step?.description }}</div>
+    <i class="ngx-gw-icon"></i>
+  </div>
 </button>
