@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { INgxGwStep } from '../interfaces';
+import { INgxGwStep, INgxGwStepStatusMap } from '../interfaces';
+import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'ngx-gw-step',
@@ -11,7 +13,9 @@ export class NgxGwStepComponent {
   @Output() navigate: EventEmitter<INgxGwStep> = new EventEmitter<INgxGwStep>(
     null
   );
-  constructor() {}
+  wizardStatusMap$: Observable<INgxGwStepStatusMap> = this.ngxGwService
+    .wizardStepStatusMap$;
+  constructor(private ngxGwService: NgxGenericWizardService) {}
 
   route() {
     this.navigate.emit(this.step);

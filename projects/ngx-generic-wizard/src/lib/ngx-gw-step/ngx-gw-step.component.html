@@ -1,4 +1,13 @@
-<button type="button" class="ngx-gw-step-button" (click)="route()">
+<button
+  type="button"
+  class="ngx-gw-step-button"
+  (click)="route()"
+  [attr.disabled]="
+    step?.status?.code === (wizardStatusMap$ | async)?.initial.code
+      ? 'disabled'
+      : null
+  "
+>
   <div class="ngx-gw-row">
     <div class="ngx-gw-badge">{{ step?.stepOrder }}</div>
     <div class="ngx-gw-step-button-text">{{ step?.description }}</div>
