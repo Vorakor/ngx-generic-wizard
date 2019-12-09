@@ -51,5 +51,5 @@ export class NgxGwStep implements INgxGwStep {
       same = false;
     }
     return same;
-  };
+  }
 }

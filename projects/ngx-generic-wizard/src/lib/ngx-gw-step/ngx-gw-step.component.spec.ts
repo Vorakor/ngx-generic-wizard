@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NgxGwStepComponent } from './ngx-gw-step.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('NgxGwStepComponent', () => {
   let component: NgxGwStepComponent;
@@ -8,9 +9,9 @@ describe('NgxGwStepComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NgxGwStepComponent ]
-    })
-    .compileComponents();
+      declarations: [NgxGwStepComponent],
+      imports: [RouterTestingModule]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

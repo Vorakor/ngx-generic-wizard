@@ -24,5 +24,5 @@ export class NgxGwStepStatus implements INgxGwStepStatus {
       same = false;
     }
     return same;
-  };
+  }
 }

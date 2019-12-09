@@ -67,5 +67,5 @@ export class NgxGwConfig implements INgxGwConfig {
       same = false;
     }
     return same;
-  };
+  }
 }
