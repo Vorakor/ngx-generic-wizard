@@ -14,9 +14,6 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  @media screen and (max-width: 992px) {
-    flex-direction: column;
-  }
 }
 
 .ngx-gw-col {

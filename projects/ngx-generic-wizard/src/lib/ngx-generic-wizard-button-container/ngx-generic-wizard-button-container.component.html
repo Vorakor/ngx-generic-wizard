@@ -5,6 +5,7 @@
         *ngIf="prevBtnShow"
         [btnText]="prevBtnText"
         [actionType]="'previous'"
+        [minWidth]="minButtonWidth"
         (action)="action($event)"
       ></ngx-gw-action-btn>
     </div>
@@ -12,6 +13,7 @@
       <ngx-gw-action-btn
         [btnText]="nextBtnText"
         [actionType]="'next'"
+        [minWidth]="minButtonWidth"
         (action)="action($event)"
       ></ngx-gw-action-btn>
     </div>
@@ -19,6 +21,7 @@
       <ngx-gw-action-btn
         [btnText]="reenterBtnText"
         [actionType]="'reenter'"
+        [minWidth]="minButtonWidth"
         (action)="action($event)"
       ></ngx-gw-action-btn>
     </div>

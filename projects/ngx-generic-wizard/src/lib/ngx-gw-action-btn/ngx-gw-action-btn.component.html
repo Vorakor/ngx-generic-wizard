@@ -7,6 +7,10 @@
       : 'ngx-gw-action-btn-secondary'
   "
   (click)="actionEmit()"
+  [ngStyle]="{
+    'min-width.px': minButtonWidth,
+    'max-width.px': maxButtonWidth
+  }"
 >
   {{ btnText }}
 </button>

@@ -16,6 +16,7 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit {
   prevBtnText: string;
   prevBtnShow: boolean;
   reenterBtnText: string;
+  minButtonWidth: number;
   constructor(private ngxGwService: NgxGenericWizardService) {}
 
   ngOnInit() {
@@ -66,6 +67,7 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit {
         }
       });
     this.ngxGwService.addSubscription(wzBtnSub);
+    this.setButtonSize();
   }
 
   action(event) {
@@ -88,5 +90,20 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit {
 
   reenter() {
     this.ngxGwService.resetFinalized(this.config);
+  }
+
+  setButtonSize() {
+    let maxString = '';
+    [this.nextBtnText, this.prevBtnText, this.reenterBtnText].forEach(text => {
+      if (maxString.length === 0) {
+        maxString = text;
+      } else if (text.length > maxString.length) {
+        maxString = text;
+      }
+    });
+    const c = document.createElement('canvas');
+    const context = c.getContext('2d');
+    context.font = '16px Arial';
+    this.minButtonWidth = Math.ceil(context.measureText(maxString).width);
   }
 }

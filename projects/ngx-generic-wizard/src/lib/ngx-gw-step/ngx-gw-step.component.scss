@@ -35,3 +35,27 @@
   display: inline-block;
   margin-left: 5px;
 }
+
+.disabled {
+  opacity: 0.65;
+}
+
+.initial {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.current {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.complete {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.incomplete {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
