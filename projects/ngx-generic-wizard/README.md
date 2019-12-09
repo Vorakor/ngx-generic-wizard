@@ -2,6 +2,8 @@
 
 This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.14.
 
+Generic wizard generator complete with components and a service layer. This project will generate any amount of steps that you want in your project and is reusable.
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project npx-generic-wizard` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project npx-generic-wizard`.
