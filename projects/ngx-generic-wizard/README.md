@@ -1,27 +1,44 @@
-# NgxGenericWizard
+# Ngx Generic Wizard
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.14.
+The Generic Wizard will generate any amount of steps that you want in your wizard and is reusable. It comes with three different components, a service, and a number of interfaces which need to be used to interact with the components, given the nature of this complex wizard generator.
 
-Generic wizard generator complete with components and a service layer. This project will generate any amount of steps that you want in your project and is reusable.
+## Install
 
-## Code scaffolding
+Basic install and setup include this:
 
-Run `ng generate component component-name --project npx-generic-wizard` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project npx-generic-wizard`.
+```
+npm install ngx-generic-wizard
+```
 
-> Note: Don't forget to add `--project npx-generic-wizard` or else it will be added to the default project in your `angular.json` file.
+Be sure to add the module and service to your app.module.ts file:
 
-## Build
+```js
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+...
+import { NgxGenericWizardModule, NgxGenericWizardService } from 'ngx-generic-wizard'; // <-- Here
+...
 
-Run `ng build npx-generic-wizard` to build the project. The build artifacts will be stored in the `dist/` directory.
+@NgModule({
+    declarations: [...],
+    imports: [
+        BrowserModule,
+        ...
+        NgxGenericWizardModule, // <-- And here
+        ...
+    ],
+    providers: [NgxGenericWizardService] // And don't forget this!
+```
 
-## Publishing
+You need to ensure that you do actually add the service as NgxGenericWizard won't work without it, that service is necessary to handle the extremely complex interaction between steps and the application that's using the wizard.
 
-After building your library with `ng build npx-generic-wizard`, go to the dist folder `cd dist/npx-generic-wizard` and run `npm publish`.
+## Usage
 
-## Running unit tests
+TODO:
 
-Run `ng test npx-generic-wizard` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+-   Finish Usage section.
+-   Finish Color Scheme / Styling tooling.
+-   Finish writing unit tests.
+-   Move repo to workspace repo.
+-   Create new sub-repo for this lib.
+-   Add ngx-dynamic-forms as another sub-repo for workspace.

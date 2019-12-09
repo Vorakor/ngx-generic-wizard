@@ -1,21 +1,21 @@
 {
-  "name": "ngx-generic-wizard",
-  "version": "0.1.1",
-  "scripts": {
-    "build": "ng-packagr -p package.json"
-  },
-  "peerDependencies": {
-    "@angular/animations": "^8.2.14",
-    "@angular/cdk": "^8.2.3",
-    "@angular/common": "^8.2.14",
-    "@angular/compiler": "^8.2.14",
-    "@angular/core": "^8.2.14",
-    "@angular/forms": "^8.2.14",
-    "@angular/platform-browser": "^8.2.14",
-    "@angular/platform-browser-dynamic": "^8.2.14",
-    "@angular/router": "^8.2.14",
-    "rxjs": "~6.4.0",
-    "tslib": "^1.10.0",
-    "zone.js": "~0.9.1"
-  }
+    "name": "ngx-generic-wizard",
+    "version": "0.1.2",
+    "scripts": {
+        "build": "ng-packagr -p package.json"
+    },
+    "peerDependencies": {
+        "@angular/animations": "^8.2.14",
+        "@angular/cdk": "^8.2.3",
+        "@angular/common": "^8.2.14",
+        "@angular/compiler": "^8.2.14",
+        "@angular/core": "^8.2.14",
+        "@angular/forms": "^8.2.14",
+        "@angular/platform-browser": "^8.2.14",
+        "@angular/platform-browser-dynamic": "^8.2.14",
+        "@angular/router": "^8.2.14",
+        "rxjs": "~6.4.0",
+        "tslib": "^1.10.0",
+        "zone.js": "~0.9.1"
+    }
 }
