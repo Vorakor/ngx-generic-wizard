@@ -7,7 +7,7 @@
             "projectType": "library",
             "root": "projects/ngx-generic-wizard",
             "sourceRoot": "projects/ngx-generic-wizard/src",
-            "prefix": "ngx-gw",
+            "prefix": "lib",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-ng-packagr:build",
