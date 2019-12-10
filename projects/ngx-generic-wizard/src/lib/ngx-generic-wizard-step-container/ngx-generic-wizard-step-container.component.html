@@ -1,15 +1,25 @@
 <div
-  class="ngx-gw-container ngx-gw-text-center"
-  *ngIf="(finalize$ | async) === (false || null || undefined)"
+    class="ngx-gw-container ngx-gw-text-center"
+    *ngIf="
+        (finalize$ | async) === false ||
+        (finalize$ | async) === null ||
+        (finalize$ | async) === undefined
+    "
 >
-  <div class="ngx-gw-row">
-    <ng-container *ngFor="let step of steps$ | async">
-      <div class="ngx-gw-col ngx-gw-line" *ngIf="step.stepOrder !== minOrder">
-        <ngx-gw-line></ngx-gw-line>
-      </div>
-      <div class="ngx-gw-col ngx-gw-step">
-        <ngx-gw-step [step]="step" (navigate)="navigate($event)"></ngx-gw-step>
-      </div>
-    </ng-container>
-  </div>
+    <div class="ngx-gw-row">
+        <ng-container *ngFor="let step of steps$ | async">
+            <div
+                class="ngx-gw-col ngx-gw-line"
+                *ngIf="step.stepOrder !== minOrder"
+            >
+                <ngx-gw-line></ngx-gw-line>
+            </div>
+            <div class="ngx-gw-col ngx-gw-step">
+                <ngx-gw-step
+                    [step]="step"
+                    (navigate)="navigate($event)"
+                ></ngx-gw-step>
+            </div>
+        </ng-container>
+    </div>
 </div>

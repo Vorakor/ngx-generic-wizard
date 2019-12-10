@@ -1,35 +1,43 @@
 <div class="ngx-gw-container ngx-gw-text-center">
-  <div class="ngx-gw-row">
-    <div
-      class="ngx-gw-col ngx-gw-prev-btn"
-      *ngIf="(finalize$ | async) === (false || null || undefined)"
-    >
-      <ngx-gw-action-btn
-        *ngIf="prevBtnShow"
-        [btnText]="prevBtnText"
-        [actionType]="'previous'"
-        [minWidth]="minButtonWidth"
-        (action)="action($event)"
-      ></ngx-gw-action-btn>
+    <div class="ngx-gw-row">
+        <div
+            class="ngx-gw-col ngx-gw-prev-btn"
+            *ngIf="
+                (finalize$ | async) === false ||
+                (finalize$ | async) === null ||
+                (finalize$ | async) === undefined
+            "
+        >
+            <ngx-gw-action-btn
+                *ngIf="prevBtnShow"
+                [btnText]="prevBtnText"
+                [actionType]="'previous'"
+                [minWidth]="minButtonWidth"
+                (action)="action($event)"
+            ></ngx-gw-action-btn>
+        </div>
+        <div
+            class="ngx-gw-col ngx-gw-next-btn"
+            *ngIf="
+                (finalize$ | async) === false ||
+                (finalize$ | async) === null ||
+                (finalize$ | async) === undefined
+            "
+        >
+            <ngx-gw-action-btn
+                [btnText]="nextBtnText"
+                [actionType]="'next'"
+                [minWidth]="minButtonWidth"
+                (action)="action($event)"
+            ></ngx-gw-action-btn>
+        </div>
+        <div class="ngx-gw-col" *ngIf="finalize$ | async">
+            <ngx-gw-action-btn
+                [btnText]="reenterBtnText"
+                [actionType]="'reenter'"
+                [minWidth]="minButtonWidth"
+                (action)="action($event)"
+            ></ngx-gw-action-btn>
+        </div>
     </div>
-    <div
-      class="ngx-gw-col ngx-gw-next-btn"
-      *ngIf="(finalize$ | async) === (false || null || undefined)"
-    >
-      <ngx-gw-action-btn
-        [btnText]="nextBtnText"
-        [actionType]="'next'"
-        [minWidth]="minButtonWidth"
-        (action)="action($event)"
-      ></ngx-gw-action-btn>
-    </div>
-    <div class="ngx-gw-col" *ngIf="finalize$ | async">
-      <ngx-gw-action-btn
-        [btnText]="reenterBtnText"
-        [actionType]="'reenter'"
-        [minWidth]="minButtonWidth"
-        (action)="action($event)"
-      ></ngx-gw-action-btn>
-    </div>
-  </div>
 </div>
