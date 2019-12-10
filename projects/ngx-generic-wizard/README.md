@@ -71,7 +71,7 @@ steps: INgxGwStep[] = [
             description: 'CURRENT'
         },
         code: 'CRTUSRSGNNF',
-        description: 'Create User Sign In Information',
+        description: 'Create User',
         stepOrder: 100,
         stepUrl: 'create-sign-in'
     },
@@ -84,7 +84,7 @@ steps: INgxGwStep[] = [
             description: 'INITIAL'
         },
         code: 'CRTUSRPRFLNF',
-        description: 'Create User Profile Information',
+        description: 'Finish Profile',
         stepOrder: 300,
         stepUrl: 'create-profile'
     },
@@ -97,7 +97,7 @@ steps: INgxGwStep[] = [
             description: 'INITIAL'
         },
         code: 'CRTUSRNMNF',
-        description: 'Create Basic User Information',
+        description: 'Basic User Info',
         stepOrder: 200,
         stepUrl: 'create-user-info'
     }
