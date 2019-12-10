@@ -220,6 +220,8 @@ Assuming you've followed this code to the letter you should end up with a view l
 
 ![NgxGenericWizard Example](https://github.com/Vorakor/ngx-generic-wizard/blob/master/projects/ngx-generic-wizard/src/assets/NgxGenericWizard_example.jpg)
 
+If you cannot see the image above, go to the github repo to see it: (https://github.com/Vorakor/ngx-generic-wizard/blob/master/projects/ngx-generic-wizard/src/assets/NgxGenericWizard_example.jpg)
+
 In the image you will notice that there is a previous button, the previous button will only show when we're not on the first step. Likewise, you will notice as you get to the final step that the next button's text will change to 'finish', as well, the color of the steps themselves will change to either red if incomplete, or green if complete, or blue if this is the current step and gray / disabled if it is in an initial state. This is all a part of the functionality.
 
 More documentation about connecting a data source coming soon.
