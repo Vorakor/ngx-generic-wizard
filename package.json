@@ -1,6 +1,6 @@
 {
     "name": "vorakortech-workspace",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "Workspace for VorakorTech.io to develop and release packages to NPM",
     "main": "index.html",
     "scripts": {
