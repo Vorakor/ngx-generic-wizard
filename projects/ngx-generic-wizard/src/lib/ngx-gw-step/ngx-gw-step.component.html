@@ -1,38 +1,40 @@
 <button
-  type="button"
-  class="ngx-gw-step-button"
-  (click)="route()"
-  [attr.disabled]="
-    step?.status?.code === (wizardStatusMap$ | async)?.initial.code
-      ? 'disabled'
-      : null
-  "
-  [ngClass]="
-    step?.status?.code === (wizardStatusMap$ | async)?.initial.code
-      ? 'disabled initial'
-      : step?.status?.code === (wizardStatusMap$ | async)?.current.code
-      ? 'current'
-      : step?.status?.code === (wizardStatusMap$ | async)?.complete.code
-      ? 'complete'
-      : 'incomplete'
-  "
->
-  <div class="ngx-gw-row">
-    <div
-      class="ngx-gw-badge"
-      [ngClass]="
+    type="button"
+    class="ngx-gw-step-button"
+    (click)="route()"
+    [attr.disabled]="
         step?.status?.code === (wizardStatusMap$ | async)?.initial.code
-          ? 'initial'
-          : step?.status?.code === (wizardStatusMap$ | async)?.current.code
-          ? 'current'
-          : step?.status?.code === (wizardStatusMap$ | async)?.complete.code
-          ? 'complete'
-          : 'incomplete'
-      "
-    >
-      {{ step?.stepOrder }}
+            ? 'disabled'
+            : null
+    "
+    [ngClass]="
+        step?.status?.code === (wizardStatusMap$ | async)?.initial.code
+            ? 'disabled initial'
+            : step?.status?.code === (wizardStatusMap$ | async)?.current.code
+            ? 'current'
+            : step?.status?.code === (wizardStatusMap$ | async)?.complete.code
+            ? 'complete'
+            : 'incomplete'
+    "
+>
+    <div class="ngx-gw-row">
+        <div
+            class="ngx-gw-badge"
+            [ngClass]="
+                step?.status?.code === (wizardStatusMap$ | async)?.initial.code
+                    ? 'initial'
+                    : step?.status?.code ===
+                      (wizardStatusMap$ | async)?.current.code
+                    ? 'current'
+                    : step?.status?.code ===
+                      (wizardStatusMap$ | async)?.complete.code
+                    ? 'complete'
+                    : 'incomplete'
+            "
+        >
+            {{ getStepCount(step?.stepOrder) }}
+        </div>
+        <div class="ngx-gw-step-button-text">{{ step?.description }}</div>
+        <i class="ngx-gw-icon"></i>
     </div>
-    <div class="ngx-gw-step-button-text">{{ step?.description }}</div>
-    <i class="ngx-gw-icon"></i>
-  </div>
 </button>

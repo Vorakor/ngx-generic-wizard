@@ -542,6 +542,20 @@ export class NgxGenericWizardService {
         );
     }
 
+    getStepCount(configId: number, stepOrder: number) {
+        const allSteps: INgxGwStep[] = this.ngxGwSteps.value
+            .filter(rst => rst.configId === configId)
+            .sort((a, b) => a.stepOrder - b.stepOrder);
+        let stepCount = 0;
+        for (const step of allSteps) {
+            stepCount++;
+            if (step.stepOrder === stepOrder) {
+                break;
+            }
+        }
+        return stepCount;
+    }
+
     destroyWizard() {
         this.subs.forEach(subscription => subscription.unsubscribe());
         return;
