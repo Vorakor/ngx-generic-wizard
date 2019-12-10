@@ -4,6 +4,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Generic wizard generator complete with components and a service layer. This project will generate any amount of steps that you want in your project and is reusable.
 
+See NPM docs here: [NPM Documentation](https://github.com/Vorakor/ngx-generic-wizard/blob/master/projects/ngx-generic-wizard/README.md)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
