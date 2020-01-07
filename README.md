@@ -231,9 +231,9 @@ TODO:
 -   Finish detailing connecting a data source to a wizard.
 -   Finish Color Scheme / Styling tooling.
 -   Finish writing unit tests.
--   Move repo to workspace repo.
--   Create new sub-repo for this lib.
--   Add ngx-dynamic-forms as another sub-repo for workspace.
+-   Move repo to workspace repo. DONE (v1.7)
+-   Create new sub-repo for this lib. DONE (v1.7)
+-   Add ngx-dynamic-forms as another sub-repo for workspace. DONE (v1.7)
 
 ## Notes
 
