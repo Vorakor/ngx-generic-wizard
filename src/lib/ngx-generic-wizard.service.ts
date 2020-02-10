@@ -328,6 +328,7 @@ export class NgxGenericWizardService {
      * no need for this function to set them.
      */
     navigateToStep(step: INgxGwStep, next: boolean = false, navForward: boolean = false) {
+        // If ignoreIncomplete == false and if router.url requested is == finalizeUrl, redirect to finalizeUrl.
         if (step && Object.keys(step).length > 0) {
             if (!next && !navForward) {
                 this.setCurrentStepStatuses(step, false);
