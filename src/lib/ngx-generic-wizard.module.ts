@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-// tslint:disable-next-line: max-line-length
-import { NgxGenericWizardButtonContainerComponent } from './ngx-generic-wizard-button-container/ngx-generic-wizard-button-container.component';
-import { NgxGenericWizardStepContainerComponent } from './ngx-generic-wizard-step-container/ngx-generic-wizard-step-container.component';
-import { NgxGenericWizardService } from './ngx-generic-wizard.service';
+import { RouterModule } from '@angular/router';
+
+import {
+    NgxGenericWizardButtonContainerComponent,
+} from './ngx-generic-wizard-button-container/ngx-generic-wizard-button-container.component';
+import {
+    NgxGenericWizardStepContainerComponent,
+} from './ngx-generic-wizard-step-container/ngx-generic-wizard-step-container.component';
 import { NgxGenericWizardWidgetComponent } from './ngx-generic-wizard-widget/ngx-generic-wizard-widget.component';
+import { NgxGenericWizardService } from './ngx-generic-wizard.service';
 import { NgxGwActionBtnComponent } from './ngx-gw-action-btn/ngx-gw-action-btn.component';
 import { NgxGwLineComponent } from './ngx-gw-line/ngx-gw-line.component';
 import { NgxGwStepComponent } from './ngx-gw-step/ngx-gw-step.component';
-import { RouterModule } from '@angular/router';
 
 @NgModule({
     declarations: [
@@ -17,14 +21,14 @@ import { RouterModule } from '@angular/router';
         NgxGenericWizardWidgetComponent,
         NgxGwActionBtnComponent,
         NgxGwLineComponent,
-        NgxGwStepComponent
+        NgxGwStepComponent,
     ],
     imports: [CommonModule, RouterModule.forChild([])],
     providers: [NgxGenericWizardService],
     exports: [
         NgxGenericWizardButtonContainerComponent,
         NgxGenericWizardStepContainerComponent,
-        NgxGenericWizardWidgetComponent
-    ]
+        NgxGenericWizardWidgetComponent,
+    ],
 })
 export class NgxGenericWizardModule {}
