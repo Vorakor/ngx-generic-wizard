@@ -6,9 +6,6 @@ import {
     NgxGwStep,
     INgxGwConfig,
     NgxGwConfig,
-    INgxGwConfigHistory,
-    INgxGwStepHistory,
-    INgxGwLogs,
     INgxGwStepStatusMap,
     INgxGwColorScheme,
 } from './interfaces';
@@ -109,7 +106,7 @@ export class NgxGenericWizardService {
                 this.ngxGwConfigs.next([config]);
                 this.initialized.next(true);
                 if (colorScheme) {
-                    this.setColorScheme(colorScheme, colorScheme.configId ? config : null);
+                    this.setColorScheme(colorScheme.configId ? config : null);
                 } else {
                     this.setDefaultColorScheme();
                 }
@@ -328,6 +325,14 @@ export class NgxGenericWizardService {
      * no need for this function to set them.
      */
     navigateToStep(step: INgxGwStep, next: boolean = false, navForward: boolean = false) {
+        let requestedUrl = this.router.routerState.snapshot.url;
+        const finalizeUrl = this.ngxGwConfigs.value.find(conf => conf.configId === step.configId)
+            .finalizeUrl;
+        if (requestedUrl.startsWith('/')) {
+            if (!finalizeUrl.startsWith('/')) {
+                requestedUrl = requestedUrl.substr(1);
+            }
+        }
         // If ignoreIncomplete == false and if router.url requested is == finalizeUrl, redirect to finalizeUrl.
         if (step && Object.keys(step).length > 0) {
             if (!next && !navForward) {
@@ -336,10 +341,11 @@ export class NgxGenericWizardService {
                 this.setCurrentStepStatuses(step, true);
             }
             const stepUrl = step.stepUrl;
-            const baseUrl = this.ngxGwConfigs.value.filter(
-                conf => conf.configId === step.configId,
-            )[0].baseUrl;
-            this.router.navigate([...baseUrl.split('/'), stepUrl]);
+            const baseUrl = this.ngxGwConfigs.value.find(conf => conf.configId === step.configId)
+                .baseUrl;
+            if (requestedUrl !== finalizeUrl) {
+                this.router.navigate([...baseUrl.split('/'), stepUrl]);
+            }
         }
         return;
     }
@@ -437,7 +443,7 @@ export class NgxGenericWizardService {
         return;
     }
 
-    setColorScheme(scheme: INgxGwColorScheme, config?: INgxGwConfig) {
+    setColorScheme(config?: INgxGwConfig) {
         const colorSchemes = this.ngxGwColorSchemes.value;
         if (config && colorSchemes.filter(sch => sch.configId === config.configId).length > 0) {
             // Update existing color scheme

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
-import { map, distinctUntilChanged, filter } from 'rxjs/operators';
+import { map, distinctUntilChanged, filter, shareReplay } from 'rxjs/operators';
 import { INgxGwConfig } from '../interfaces';
 import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
 
@@ -28,10 +28,13 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
             .pipe(
                 distinctUntilChanged(),
                 filter(init => init !== null),
+                shareReplay({ refCount: true, bufferSize: 1 }),
             )
             .subscribe(init => {
                 if (!init) {
-                    throw new Error('Need to initialize the wizard generator!');
+                    throw new Error(
+                        'Need to initialize the wizard generator before buttons can be shown',
+                    );
                 }
             });
         this.ngxGwService.addSubscription(wzStepSub);

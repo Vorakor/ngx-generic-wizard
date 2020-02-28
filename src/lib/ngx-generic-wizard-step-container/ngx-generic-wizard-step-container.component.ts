@@ -34,7 +34,9 @@ export class NgxGenericWizardStepContainerComponent implements OnInit, OnChanges
             )
             .subscribe(init => {
                 if (!init) {
-                    throw new Error('Need to initialize the wizard generator!');
+                    throw new Error(
+                        'Need to initialize the wizard generator before steps can be shown',
+                    );
                 } else {
                     this.minOrder = this.ngxGwService.getMinOrder(this.configuration.configId);
                 }
