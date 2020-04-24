@@ -345,6 +345,11 @@ export class NgxGenericWizardService {
                 .baseUrl;
             if (requestedUrl !== finalizeUrl) {
                 this.router.navigate([...baseUrl.split('/'), stepUrl]);
+            } else {
+                const currentStepUrl = [baseUrl, stepUrl].join('/');
+                if (!this.finalized.value) {
+                    this.router.navigate([currentStepUrl]);
+                }
             }
         }
         return;
