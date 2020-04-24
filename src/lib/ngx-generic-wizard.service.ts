@@ -333,7 +333,7 @@ export class NgxGenericWizardService {
     ) {
         let requestedUrl = this.router.routerState.snapshot.url;
         const finalizeUrl =
-            this.ngxGwConfigs.value.length > 0
+            this.ngxGwConfigs.value !== null && this.ngxGwConfigs.value.length > 0
                 ? this.ngxGwConfigs.value.find(conf => conf.configId === step.configId).finalizeUrl
                 : config.finalizeUrl;
         if (requestedUrl.startsWith('/')) {
@@ -350,7 +350,7 @@ export class NgxGenericWizardService {
             }
             const stepUrl = step.stepUrl;
             const baseUrl =
-                this.ngxGwConfigs.value.length > 0
+                this.ngxGwConfigs.value !== null && this.ngxGwConfigs.value.length > 0
                     ? this.ngxGwConfigs.value.find(conf => conf.configId === step.configId).baseUrl
                     : config.baseUrl;
             if (requestedUrl !== finalizeUrl) {
