@@ -8,6 +8,7 @@ import {
     NgxGwConfig,
     INgxGwStepStatusMap,
     INgxGwColorScheme,
+    INgxGwStepStatus,
 } from './interfaces';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
@@ -423,8 +424,14 @@ export class NgxGenericWizardService {
      *
      * We're passing in the config of the wizard we want to get back into.
      */
-    resetFinalized(config: INgxGwConfig, reenter?: boolean, newCurrent?: INgxGwStep) {
+    resetFinalized(
+        config: INgxGwConfig,
+        reenter?: boolean,
+        newCurrent?: INgxGwStep,
+        newStatus?: INgxGwStepStatus,
+    ) {
         this.finalized.next(false);
+        let current: INgxGwStep;
         if (!reenter) {
             const allSteps = this.ngxGwSteps.value;
             const otherSteps = allSteps.filter(step => step.configId !== config.configId);
@@ -433,15 +440,16 @@ export class NgxGenericWizardService {
                 step => step.stepOrder === 1,
             )[0].status = this.wizardStepStatusMap.value.current;
             this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
-            const current = resetSteps.filter(step => step.stepOrder === 1)[0];
-            this.navigateToStep(current);
+            current = resetSteps.filter(step => step.stepOrder === 1)[0];
         } else {
-            if (!newCurrent) {
-                throw new Error('No new current defined!');
+            if (!newCurrent || !newStatus) {
+                throw new Error('No new current step or status defined!');
             } else {
-                this.navigateToStep(newCurrent);
+                current = newCurrent;
+                current.status = newStatus;
             }
         }
+        this.navigateToStep(current);
         return;
     }
 
