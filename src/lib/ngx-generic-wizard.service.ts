@@ -325,10 +325,17 @@ export class NgxGenericWizardService {
      * If next is true, then another function will have already set the statuses, so there's
      * no need for this function to set them.
      */
-    navigateToStep(step: INgxGwStep, next: boolean = false, navForward: boolean = false) {
+    navigateToStep(
+        step: INgxGwStep,
+        next: boolean = false,
+        navForward: boolean = false,
+        config?: INgxGwConfig,
+    ) {
         let requestedUrl = this.router.routerState.snapshot.url;
-        const finalizeUrl = this.ngxGwConfigs.value.find(conf => conf.configId === step.configId)
-            .finalizeUrl;
+        const finalizeUrl =
+            this.ngxGwConfigs.value.length > 0
+                ? this.ngxGwConfigs.value.find(conf => conf.configId === step.configId).finalizeUrl
+                : config.finalizeUrl;
         if (requestedUrl.startsWith('/')) {
             if (!finalizeUrl.startsWith('/')) {
                 requestedUrl = requestedUrl.substr(1);
@@ -342,8 +349,10 @@ export class NgxGenericWizardService {
                 this.setCurrentStepStatuses(step, true);
             }
             const stepUrl = step.stepUrl;
-            const baseUrl = this.ngxGwConfigs.value.find(conf => conf.configId === step.configId)
-                .baseUrl;
+            const baseUrl =
+                this.ngxGwConfigs.value.length > 0
+                    ? this.ngxGwConfigs.value.find(conf => conf.configId === step.configId).baseUrl
+                    : config.baseUrl;
             if (requestedUrl !== finalizeUrl) {
                 this.router.navigate([...baseUrl.split('/'), stepUrl]);
             } else {
@@ -441,15 +450,16 @@ export class NgxGenericWizardService {
             )[0].status = this.wizardStepStatusMap.value.current;
             this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
             current = resetSteps.filter(step => step.stepOrder === 1)[0];
+            this.navigateToStep(current);
         } else {
             if (!newCurrent || !newStatus) {
                 throw new Error('No new current step or status defined!');
             } else {
                 current = newCurrent;
                 current.status = newStatus;
+                this.navigateToStep(current, false, false, config);
             }
         }
-        this.navigateToStep(current);
         return;
     }
 
