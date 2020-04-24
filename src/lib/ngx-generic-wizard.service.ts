@@ -423,17 +423,25 @@ export class NgxGenericWizardService {
      *
      * We're passing in the config of the wizard we want to get back into.
      */
-    resetFinalized(config: INgxGwConfig) {
+    resetFinalized(config: INgxGwConfig, reenter?: boolean, newCurrent?: INgxGwStep) {
         this.finalized.next(false);
-        const allSteps = this.ngxGwSteps.value;
-        const otherSteps = allSteps.filter(step => step.configId !== config.configId);
-        const resetSteps = allSteps.filter(step => step.configId === config.configId);
-        resetSteps.filter(
-            step => step.stepOrder === 1,
-        )[0].status = this.wizardStepStatusMap.value.current;
-        this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
-        const current = resetSteps.filter(step => step.stepOrder === 1)[0];
-        this.navigateToStep(current);
+        if (!reenter) {
+            const allSteps = this.ngxGwSteps.value;
+            const otherSteps = allSteps.filter(step => step.configId !== config.configId);
+            const resetSteps = allSteps.filter(step => step.configId === config.configId);
+            resetSteps.filter(
+                step => step.stepOrder === 1,
+            )[0].status = this.wizardStepStatusMap.value.current;
+            this.ngxGwSteps.next([...otherSteps, ...resetSteps]);
+            const current = resetSteps.filter(step => step.stepOrder === 1)[0];
+            this.navigateToStep(current);
+        } else {
+            if (!newCurrent) {
+                throw new Error('No new current defined!');
+            } else {
+                this.navigateToStep(newCurrent);
+            }
+        }
         return;
     }
 
