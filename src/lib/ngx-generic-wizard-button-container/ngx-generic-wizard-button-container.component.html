@@ -31,10 +31,18 @@
                 (action)="action($event)"
             ></ngx-gw-action-btn>
         </div>
-        <div class="ngx-gw-col" *ngIf="finalize$ | async">
+        <div class="ngx-gw-col" *ngIf="(finalize$ | async) && !resetBtn">
             <ngx-gw-action-btn
                 [btnText]="reenterBtnText"
                 [actionType]="'reenter'"
+                [minWidth]="minButtonWidth"
+                (action)="action($event)"
+            ></ngx-gw-action-btn>
+        </div>
+        <div class="ngx-gw-col" *ngIf="(finalize$ | async) && resetBtn">
+            <ngx-gw-action-btn
+                [btnText]="resetBtnText"
+                [actionType]="'reset'"
                 [minWidth]="minButtonWidth"
                 (action)="action($event)"
             ></ngx-gw-action-btn>

@@ -1,29 +1,38 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
-import { map, distinctUntilChanged, filter, shareReplay } from 'rxjs/operators';
-import { INgxGwConfig } from '../interfaces';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { distinctUntilChanged, filter, shareReplay } from 'rxjs/operators';
+
 import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
+import { NgxGwEventStreamService } from '../ngx-gw-event-stream.service';
 
 @Component({
     selector: 'ngx-gw-button-container',
     templateUrl: './ngx-generic-wizard-button-container.component.html',
     styleUrls: ['./ngx-generic-wizard-button-container.component.scss'],
 })
-export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChanges {
-    @Input() config: INgxGwConfig;
-    finalize$: Observable<boolean> = this.ngxGwService.finalized$;
-    nextBtnText: string;
-    prevBtnText: string;
-    prevBtnShow: boolean;
-    reenterBtnText: string;
-    minButtonWidth: number;
-    configuration: INgxGwConfig = {} as INgxGwConfig;
-    constructor(private ngxGwService: NgxGenericWizardService) {}
+export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() resetWizardBtn = false;
+    finalize$: Observable<boolean> = this.ngxGwService.finalized$; // Get rid of this, just use the service observable
+    nextBtnText: string; // Turn into input
+    prevBtnText: string; // Turn into input
+    prevBtnShow: boolean; // Turn into input
+    reenterBtnText: string; // Turn into input
+    minButtonWidth: number; // Internal variable used to size buttons, no need to be input
+    resetBtn: boolean;
+    resetBtnText: string;
+    subs: Subscription[] = [];
+    constructor(
+        private ngxGwService: NgxGenericWizardService,
+        private ngxGwEventStream: NgxGwEventStreamService,
+    ) {}
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.resetWizardBtn) {
+            this.resetBtn = changes.resetWizardBtn.currentValue;
+        }
+    }
 
     ngOnInit() {
-        if (!this.configuration) {
-            throw new Error('Wizard Button Container needs an assigned configuration');
-        }
         const wzStepSub = this.ngxGwService.initialized$
             .pipe(
                 distinctUntilChanged(),
@@ -37,49 +46,46 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
                     );
                 }
             });
-        this.ngxGwService.addSubscription(wzStepSub);
+        this.subs.push(wzStepSub);
         this.prevBtnText = 'Previous';
         this.reenterBtnText = 'Re-enter Wizard';
+        this.resetBtnText = 'Reset Wizard';
         const wzBtnSub = combineLatest(
             this.ngxGwService.ngxGwSteps$.pipe(
-                filter(steps => steps !== null),
-                map(steps => steps.filter(step => step.configId === this.configuration.configId)),
+                filter(steps => steps.length > 0),
                 distinctUntilChanged(),
+                shareReplay({ refCount: true, bufferSize: 1 }),
             ),
-            this.ngxGwService.wizardStepStatusMap$.pipe(distinctUntilChanged()),
-        )
-            .pipe(map(([st, statMap]) => ({ Steps: st, StatusMap: statMap })))
-            .subscribe(results => {
-                const currentStep = results.Steps.filter(
-                    step => step.status.code === results.StatusMap.current.code,
-                )[0];
-                const maxOrder: number = Math.max.apply(
-                    Math,
-                    results.Steps.map(step => step.stepOrder),
-                );
-                const minOrder: number = Math.min.apply(
-                    Math,
-                    results.Steps.map(step => step.stepOrder),
-                );
-                if (currentStep && currentStep.stepOrder === maxOrder) {
-                    this.nextBtnText = 'Finish';
-                } else {
-                    this.nextBtnText = 'Next';
-                }
-                if (currentStep && currentStep.stepOrder === minOrder) {
-                    this.prevBtnShow = false;
-                } else {
-                    this.prevBtnShow = true;
-                }
-            });
-        this.ngxGwService.addSubscription(wzBtnSub);
+            this.ngxGwService.ngxGwStepStatusMap$.pipe(
+                filter(statusMap => statusMap !== null),
+                distinctUntilChanged(),
+                shareReplay({ refCount: true, bufferSize: 1 }),
+            ),
+        ).subscribe(([steps, statusMap]) => {
+            const currentStep = steps.filter(
+                step => step.status.code === statusMap.current.code,
+            )[0];
+            const maxOrder: number = Math.max.apply(
+                Math,
+                steps.map(step => step.stepOrder),
+            );
+            const minOrder: number = Math.min.apply(
+                Math,
+                steps.map(step => step.stepOrder),
+            );
+            if (currentStep && currentStep.stepOrder === maxOrder) {
+                this.nextBtnText = 'Finish';
+            } else {
+                this.nextBtnText = 'Next';
+            }
+            if (currentStep && currentStep.stepOrder === minOrder) {
+                this.prevBtnShow = false;
+            } else {
+                this.prevBtnShow = true;
+            }
+        });
+        this.subs.push(wzBtnSub);
         this.setButtonSize();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.config) {
-            this.configuration = changes.config.currentValue;
-        }
     }
 
     action(event) {
@@ -87,21 +93,27 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
             this.next();
         } else if (event === 'previous') {
             this.previous();
-        } else {
+        } else if (event === 'reenter') {
             this.reenter();
+        } else {
+            this.resetWizard();
         }
     }
 
     next() {
-        this.ngxGwService.next(this.configuration);
+        this.ngxGwService.next();
     }
 
     previous() {
-        this.ngxGwService.prev(this.configuration);
+        this.ngxGwService.prev();
     }
 
     reenter() {
-        this.ngxGwService.resetFinalized(this.configuration);
+        this.ngxGwService.resetFinalized();
+    }
+
+    resetWizard() {
+        this.ngxGwService.resetWizard();
     }
 
     setButtonSize() {
@@ -117,5 +129,9 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
         const context = c.getContext('2d');
         context.font = '16px Arial';
         this.minButtonWidth = Math.ceil(context.measureText(maxString).width);
+    }
+
+    ngOnDestroy() {
+        this.subs.forEach(subscription => subscription.unsubscribe());
     }
 }

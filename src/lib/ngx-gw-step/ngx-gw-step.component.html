@@ -3,16 +3,16 @@
     class="ngx-gw-step-button"
     (click)="route()"
     [attr.disabled]="
-        step?.status?.code === (wizardStatusMap$ | async)?.initial.code
+        step?.status?.code === (statusMap$ | async)?.initial.code
             ? 'disabled'
             : null
     "
     [ngClass]="
-        step?.status?.code === (wizardStatusMap$ | async)?.initial.code
+        step?.status?.code === (statusMap$ | async)?.initial.code
             ? 'disabled initial'
-            : step?.status?.code === (wizardStatusMap$ | async)?.current.code
+            : step?.status?.code === (statusMap$ | async)?.current.code
             ? 'current'
-            : step?.status?.code === (wizardStatusMap$ | async)?.complete.code
+            : step?.status?.code === (statusMap$ | async)?.complete.code
             ? 'complete'
             : 'incomplete'
     "
@@ -21,13 +21,13 @@
         <div
             class="ngx-gw-badge"
             [ngClass]="
-                step?.status?.code === (wizardStatusMap$ | async)?.initial.code
+                step?.status?.code === (statusMap$ | async)?.initial.code
                     ? 'initial'
                     : step?.status?.code ===
-                      (wizardStatusMap$ | async)?.current.code
+                      (statusMap$ | async)?.current.code
                     ? 'current'
                     : step?.status?.code ===
-                      (wizardStatusMap$ | async)?.complete.code
+                      (statusMap$ | async)?.complete.code
                     ? 'complete'
                     : 'incomplete'
             "

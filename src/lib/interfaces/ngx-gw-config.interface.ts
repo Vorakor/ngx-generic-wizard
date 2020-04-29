@@ -24,48 +24,13 @@
  *            how this wizard generator works.
  */
 export interface INgxGwConfig {
-  configId?: number;
-  code?: string;
-  description?: string;
-  baseUrl?: string;
-  finalizeUrl?: string;
-  ignoreIncomplete?: boolean;
-  completedDisabled?: boolean;
-  applicationId?: number;
-  moduleId?: number;
-  Compare?(a: INgxGwConfig, b: INgxGwConfig): boolean;
-}
-
-export class NgxGwConfig implements INgxGwConfig {
-  Compare = (a: INgxGwConfig, b: INgxGwConfig) => {
-    let same = true;
-    if (a.configId !== b.configId) {
-      same = false;
-    }
-    if (a.code !== b.code) {
-      same = false;
-    }
-    if (a.description !== b.description) {
-      same = false;
-    }
-    if (a.baseUrl !== b.baseUrl) {
-      same = false;
-    }
-    if (a.finalizeUrl !== b.finalizeUrl) {
-      same = false;
-    }
-    if (a.ignoreIncomplete !== b.ignoreIncomplete) {
-      same = false;
-    }
-    if (a.completedDisabled !== b.completedDisabled) {
-      same = false;
-    }
-    if (a.applicationId !== b.applicationId) {
-      same = false;
-    }
-    if (a.moduleId !== b.moduleId) {
-      same = false;
-    }
-    return same;
-  }
+    configId?: number;
+    code?: string;
+    description?: string;
+    baseUrl?: string;
+    finalizeUrl?: string;
+    ignoreIncomplete?: boolean;
+    completedDisabled?: boolean;
+    applicationId?: number;
+    moduleId?: number;
 }

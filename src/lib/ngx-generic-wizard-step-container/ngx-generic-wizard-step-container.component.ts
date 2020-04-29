@@ -1,50 +1,54 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Observable } from 'rxjs';
-import { INgxGwStep, INgxGwConfig } from '../interfaces';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { distinctUntilChanged, filter, shareReplay } from 'rxjs/operators';
+
+import { INgxGwStep } from '../interfaces';
 import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 @Component({
     selector: 'ngx-gw-step-container',
     templateUrl: './ngx-generic-wizard-step-container.component.html',
     styleUrls: ['./ngx-generic-wizard-step-container.component.scss'],
 })
-export class NgxGenericWizardStepContainerComponent implements OnInit, OnChanges {
-    @Input() config: INgxGwConfig;
-    finalize$: Observable<boolean> = this.ngxGwService.finalized$;
+export class NgxGenericWizardStepContainerComponent implements OnInit, OnDestroy {
+    finalize$: Observable<boolean> = this.ngxGwService.finalized$; // Just grab from the service
     steps$: Observable<INgxGwStep[]> = this.ngxGwService.ngxGwSteps$.pipe(
         filter(steps => steps !== null),
         distinctUntilChanged(),
-    );
+    ); // Just grab from the service.
     minOrder = 0;
-    configuration: INgxGwConfig = {} as INgxGwConfig;
+    subs: Subscription[] = [];
     constructor(private ngxGwService: NgxGenericWizardService) {}
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.config) {
-            this.configuration = changes.config.currentValue;
-        }
-    }
-
     ngOnInit() {
-        const wzStepSub = this.ngxGwService.initialized$
-            .pipe(
+        const wzStepSub = combineLatest(
+            this.ngxGwService.initialized$.pipe(
                 distinctUntilChanged(),
                 filter(init => init !== null),
-            )
-            .subscribe(init => {
-                if (!init) {
-                    throw new Error(
-                        'Need to initialize the wizard generator before steps can be shown',
-                    );
-                } else {
-                    this.minOrder = this.ngxGwService.getMinOrder(this.configuration.configId);
-                }
-            });
-        this.ngxGwService.addSubscription(wzStepSub);
+                shareReplay({ refCount: true, bufferSize: 1 }),
+            ),
+            this.ngxGwService.ngxGwSteps$.pipe(
+                distinctUntilChanged(),
+                filter(steps => steps.length > 0),
+                shareReplay({ refCount: true, bufferSize: 1 }),
+            ),
+        ).subscribe(([init, steps]) => {
+            if (!init) {
+                throw new Error(
+                    'Need to initialize the wizard generator before steps can be shown',
+                );
+            } else {
+                this.minOrder = this.ngxGwService.getMinOrder(steps);
+            }
+        });
+        this.subs.push(wzStepSub);
     }
 
     navigate(event) {
         this.ngxGwService.navigateToStep(event);
+    }
+
+    ngOnDestroy() {
+        this.subs.forEach(subscription => subscription.unsubscribe());
     }
 }
