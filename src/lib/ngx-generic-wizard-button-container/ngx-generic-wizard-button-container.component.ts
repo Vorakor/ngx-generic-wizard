@@ -33,20 +33,6 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
     }
 
     ngOnInit() {
-        const wzStepSub = this.ngxGwService.initialized$
-            .pipe(
-                distinctUntilChanged(),
-                filter(init => init !== null),
-                shareReplay({ refCount: true, bufferSize: 1 }),
-            )
-            .subscribe(init => {
-                if (!init) {
-                    throw new Error(
-                        'Need to initialize the wizard generator before buttons can be shown',
-                    );
-                }
-            });
-        this.subs.push(wzStepSub);
         this.prevBtnText = 'Previous';
         this.reenterBtnText = 'Re-enter Wizard';
         this.resetBtnText = 'Reset Wizard';
@@ -101,18 +87,22 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
     }
 
     next() {
+        this.ngxGwEventStream.submitToStream(this.next, 'Fired');
         this.ngxGwService.next();
     }
 
     previous() {
+        this.ngxGwEventStream.submitToStream(this.previous, 'Fired');
         this.ngxGwService.prev();
     }
 
     reenter() {
+        this.ngxGwEventStream.submitToStream(this.reenter, 'Fired');
         this.ngxGwService.resetFinalized();
     }
 
     resetWizard() {
+        this.ngxGwEventStream.submitToStream(this.resetWizard, 'Fired');
         this.ngxGwService.resetWizard();
     }
 

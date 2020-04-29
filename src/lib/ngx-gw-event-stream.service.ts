@@ -73,23 +73,25 @@ export class NgxGwEventStreamService {
     }
 
     getEventCode(fnName: string): number {
-        const currentCodes = this.eventCodes.value;
-        const eventCode = currentCodes.find(
-            eCode => eCode.fnName.toLowerCase() === fnName.toLowerCase(),
-        );
-        if (eventCode) {
-            return eventCode.code;
-        } else {
-            const maxCode: number = Math.max.apply(
-                Math,
-                currentCodes.map(eCode => eCode.code),
+        const currentCodes =
+            this.eventCodes.value !== null ? this.eventCodes.value : ([] as INgxGwFnEventCodes[]);
+        if (currentCodes.length > 0) {
+            const eventCode = currentCodes.find(
+                eCode => eCode.fnName.toLowerCase() === fnName.toLowerCase(),
             );
-            currentCodes.push({
-                fnName,
-                code: maxCode + 1,
-            });
-            this.eventCodes.next(currentCodes);
-            return this.getEventCode(fnName);
+            if (eventCode) {
+                return eventCode.code;
+            }
         }
+        const maxCode: number = Math.max.apply(
+            Math,
+            currentCodes.map(eCode => eCode.code),
+        );
+        currentCodes.push({
+            fnName,
+            code: maxCode + 1,
+        });
+        this.eventCodes.next(currentCodes);
+        return this.getEventCode(fnName);
     }
 }
