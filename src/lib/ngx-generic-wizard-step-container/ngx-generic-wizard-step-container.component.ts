@@ -17,31 +17,38 @@ export class NgxGenericWizardStepContainerComponent implements OnInit, OnDestroy
         distinctUntilChanged(),
     ); // Just grab from the service.
     minOrder = 0;
+    initTime = null;
     subs: Subscription[] = [];
     constructor(private ngxGwService: NgxGenericWizardService) {}
 
     ngOnInit() {
-        const wzStepSub = combineLatest(
-            this.ngxGwService.initialized$.pipe(
-                distinctUntilChanged(),
-                filter(init => init !== null),
-                shareReplay({ refCount: true, bufferSize: 1 }),
-            ),
-            this.ngxGwService.ngxGwSteps$.pipe(
+        const wzStepSub = this.ngxGwService.ngxGwSteps$
+            .pipe(
                 distinctUntilChanged(),
                 filter(steps => steps.length > 0),
                 shareReplay({ refCount: true, bufferSize: 1 }),
-            ),
-        ).subscribe(([init, steps]) => {
-            if (!init) {
-                throw new Error(
-                    'Need to initialize the wizard generator before steps can be shown',
-                );
-            } else {
+            )
+            .subscribe(steps => {
                 this.minOrder = this.ngxGwService.getMinOrder(steps);
-            }
-        });
+            });
         this.subs.push(wzStepSub);
+        const wzInitSub = this.ngxGwService.initialized$
+            .pipe(
+                distinctUntilChanged(),
+                filter(init => init !== null),
+                shareReplay({ refCount: true, bufferSize: 1 }),
+            )
+            .subscribe(init => {
+                clearTimeout(this.initTime);
+                this.initTime = setTimeout(() => {
+                    if (!init) {
+                        throw new Error(
+                            'Need to initialize the wizard generator before steps can be shown',
+                        );
+                    }
+                }, 1000);
+            });
+        this.subs.push(wzInitSub);
     }
 
     navigate(event) {

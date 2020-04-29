@@ -82,16 +82,23 @@ export class NgxGwEventStreamService {
             if (eventCode) {
                 return eventCode.code;
             }
+            const maxCode: number = Math.max.apply(
+                Math,
+                currentCodes.map(eCode => eCode.code),
+            );
+            currentCodes.push({
+                fnName,
+                code: maxCode + 1,
+            });
+            this.eventCodes.next(currentCodes);
+            return this.getEventCode(fnName);
+        } else {
+            currentCodes.push({
+                fnName,
+                code: 1,
+            });
+            this.eventCodes.next(currentCodes);
+            return this.getEventCode(fnName);
         }
-        const maxCode: number = Math.max.apply(
-            Math,
-            currentCodes.map(eCode => eCode.code),
-        );
-        currentCodes.push({
-            fnName,
-            code: maxCode + 1,
-        });
-        this.eventCodes.next(currentCodes);
-        return this.getEventCode(fnName);
     }
 }
