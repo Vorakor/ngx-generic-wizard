@@ -2,9 +2,10 @@
     <div class="ngx-gw-row">
         <div
             class="ngx-gw-col ngx-gw-prev-btn"
-            *ngIf="(prevBtnShow$ | async) && !(finalize$ | async)"
+            *ngIf="!(finalize$ | async)"
         >
             <ngx-gw-action-btn
+                *ngIf="(prevBtnShow$ | async)"
                 [btnText]="prevBtnText"
                 [actionType]="'previous'"
                 [minWidth]="minButtonWidth"

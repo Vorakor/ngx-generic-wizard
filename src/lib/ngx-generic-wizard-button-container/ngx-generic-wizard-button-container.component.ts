@@ -62,37 +62,43 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
                 shareReplay({ refCount: true, bufferSize: 1 }),
             ),
         ).subscribe(([steps, statusMap]) => {
-            const currentStep = steps.filter(
-                step => step.status.code === statusMap.current.code,
-            )[0];
-            const maxOrder: number = Math.max.apply(
-                Math,
-                steps.map(step => step.stepOrder),
-            );
-            const minOrder: number = Math.min.apply(
-                Math,
-                steps.map(step => step.stepOrder),
-            );
+            const currentStep = steps.find(step => step.status.code === statusMap.current.code);
+            const maxOrder = this.ngxGwService.getMaxOrder(steps);
+            const minOrder = this.ngxGwService.getMinOrder(steps);
             if (currentStep && currentStep.stepOrder === maxOrder) {
                 this.nextBtnText = 'Finish';
-            } else {
-                this.nextBtnText = 'Next';
-            }
-            if (currentStep && currentStep.stepOrder === minOrder) {
-                this.prevBtnShow.next(false);
-                // tslint:disable-next-line: no-string-literal
-                if (!this.cref['destroyed']) {
-                    this.cref.detectChanges();
-                }
-            } else {
                 this.prevBtnShow.next(true);
                 // tslint:disable-next-line: no-string-literal
                 if (!this.cref['destroyed']) {
                     this.cref.detectChanges();
                 }
+            } else {
+                this.nextBtnText = 'Next';
+                if (currentStep && currentStep.stepOrder === minOrder) {
+                    this.prevBtnShow.next(false);
+                    // tslint:disable-next-line: no-string-literal
+                    if (!this.cref['destroyed']) {
+                        this.cref.detectChanges();
+                    }
+                } else {
+                    this.prevBtnShow.next(true);
+                    // tslint:disable-next-line: no-string-literal
+                    if (!this.cref['destroyed']) {
+                        this.cref.detectChanges();
+                    }
+                }
             }
         });
         this.subs.push(wzBtnSub);
+        const wzFinSub = this.ngxGwService.finalized$
+            .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }))
+            .subscribe(final => {
+                // tslint:disable-next-line: no-string-literal
+                if (!this.cref['destroyed']) {
+                    this.cref.detectChanges();
+                }
+            });
+        this.subs.push(wzFinSub);
         this.setButtonSize();
     }
 

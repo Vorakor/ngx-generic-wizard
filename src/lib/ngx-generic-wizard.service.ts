@@ -598,22 +598,28 @@ export class NgxGenericWizardService {
         let requestedUrl = this.router.routerState.snapshot.url;
         let finalizeUrl = '';
         let baseUrl = '';
+        // This needs to be resolved... just because we're not initialized doesn't mean config isn't
         if (this.initialized.value) {
             finalizeUrl = this.ngxGwConfig.value.finalizeUrl;
             baseUrl = this.ngxGwConfig.value.baseUrl;
         } else {
-            if (config && Object.keys(config).length > 0) {
-                finalizeUrl = config.finalizeUrl;
-                baseUrl = config.baseUrl;
+            if (this.ngxGwConfig && Object.keys(this.ngxGwConfig.value).length > 0) {
+                finalizeUrl = this.ngxGwConfig.value.finalizeUrl;
+                baseUrl = this.ngxGwConfig.value.baseUrl;
             } else {
-                this.eventStream.submitToStream(this.navigateToStep, 'Error', {
-                    step,
-                    next,
-                    navForward,
-                });
-                throw new Error(
-                    'Cannot navigate to step in wizard! Wizard not initialized or no data passed in to operate on!',
-                );
+                if (config && Object.keys(config).length > 0) {
+                    finalizeUrl = config.finalizeUrl;
+                    baseUrl = config.baseUrl;
+                } else {
+                    this.eventStream.submitToStream(this.navigateToStep, 'Error', {
+                        step,
+                        next,
+                        navForward,
+                    });
+                    throw new Error(
+                        'Cannot navigate to step in wizard! Wizard not initialized or no data passed in to operate on!',
+                    );
+                }
             }
         }
         if (requestedUrl.startsWith('/')) {
