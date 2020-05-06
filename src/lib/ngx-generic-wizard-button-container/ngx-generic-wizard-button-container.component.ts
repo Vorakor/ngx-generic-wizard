@@ -8,7 +8,7 @@ import {
     ChangeDetectorRef,
 } from '@angular/core';
 import { combineLatest, Observable, Subscription, BehaviorSubject } from 'rxjs';
-import { distinctUntilChanged, filter, shareReplay } from 'rxjs/operators';
+import { distinctUntilChanged, filter, shareReplay, tap } from 'rxjs/operators';
 
 import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
 import { NgxGwEventStreamService } from '../ngx-gw-event-stream.service';
@@ -18,7 +18,7 @@ import { NgxGwEventStreamService } from '../ngx-gw-event-stream.service';
     templateUrl: './ngx-generic-wizard-button-container.component.html',
     styleUrls: ['./ngx-generic-wizard-button-container.component.scss'],
 })
-export class NgxGenericWizardButtonContainerComponent implements OnInit, OnDestroy {
+export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChanges, OnDestroy {
     @Input() resetWizardBtn = false;
     finalize$: Observable<boolean> = this.ngxGwService.finalized$.pipe(
         distinctUntilChanged(),
@@ -30,29 +30,36 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnDestr
     prevBtnShow: boolean;
     reenterBtnText: string; // Turn into input
     minButtonWidth: number; // Internal variable used to size buttons, no need to be input
-    // resetBtn: boolean;
+    resetBtn: boolean;
     resetBtnText: string;
     subs: Subscription[] = [];
-    // private cref: ChangeDetectorRef,
     constructor(
         private ngxGwService: NgxGenericWizardService,
         private ngxGwEventStream: NgxGwEventStreamService,
     ) {}
 
-    // ngOnChanges(changes: SimpleChanges) {
-    //     if (changes.resetWizardBtn) {
-    //         this.resetBtn = changes.resetWizardBtn.currentValue;
-    //     }
-    // }
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.resetWizardBtn) {
+            this.resetBtn = changes.resetWizardBtn.currentValue;
+        }
+    }
 
     ngOnInit() {
         this.prevBtnText = 'Previous';
         this.reenterBtnText = 'Re-enter Wizard';
         this.resetBtnText = 'Reset Wizard';
+        /**
+         * DO NOT add distinctUntilChanged() on the ngxGwSteps$ observable here,
+         * distinctUntilChanged() does not detect changes to data within observable
+         * objects therefore, with that function in place, this fails to update the
+         * buttons and whether or not they appear on the page.
+         *
+         * However, distinctUntilChanged() is fine for the statusMap observable as
+         * that really shouldn't be changing much.
+         */
         const wzBtnSub = combineLatest(
             this.ngxGwService.ngxGwSteps$.pipe(
                 filter(steps => steps.length > 0),
-                distinctUntilChanged(),
                 shareReplay({ refCount: true, bufferSize: 1 }),
             ),
             this.ngxGwService.ngxGwStepStatusMap$.pipe(
@@ -67,37 +74,16 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnDestr
             if (currentStep && currentStep.stepOrder === maxOrder) {
                 this.nextBtnText = 'Finish';
                 this.prevBtnShow = true;
-                // tslint:disable-next-line: no-string-literal
-                // if (!this.cref['destroyed']) {
-                //     this.cref.detectChanges();
-                // }
             } else {
                 this.nextBtnText = 'Next';
                 if (currentStep && currentStep.stepOrder === minOrder) {
                     this.prevBtnShow = false;
-                    // tslint:disable-next-line: no-string-literal
-                    // if (!this.cref['destroyed']) {
-                    //     this.cref.detectChanges();
-                    // }
                 } else {
                     this.prevBtnShow = true;
-                    // tslint:disable-next-line: no-string-literal
-                    // if (!this.cref['destroyed']) {
-                    //     this.cref.detectChanges();
-                    // }
                 }
             }
         });
-        // this.subs.push(wzBtnSub);
-        // const wzFinSub = this.ngxGwService.finalized$
-        //     .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }))
-        //     .subscribe(final => {
-        //         // tslint:disable-next-line: no-string-literal
-        //         // if (!this.cref['destroyed']) {
-        //         //     this.cref.detectChanges();
-        //         // }
-        //     });
-        // this.subs.push(wzFinSub);
+        this.subs.push(wzBtnSub);
         this.setButtonSize();
     }
 
