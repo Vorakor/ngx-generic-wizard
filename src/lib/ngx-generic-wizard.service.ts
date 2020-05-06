@@ -3,7 +3,13 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, shareReplay, take } from 'rxjs/operators';
 
-import { INgxGwConfig, INgxGwLogs, INgxGwStep, INgxGwStepStatus, INgxGwStepStatusMap } from './interfaces';
+import {
+    INgxGwConfig,
+    INgxGwLogs,
+    INgxGwStep,
+    INgxGwStepStatus,
+    INgxGwStepStatusMap,
+} from './interfaces';
 import { NgxGwEventStreamService } from './ngx-gw-event-stream.service';
 
 @Injectable({
@@ -87,8 +93,14 @@ export class NgxGenericWizardService {
                 take(1),
             )
             .subscribe(step => {
-                this.setGwSteps(steps);
-                this.setStepsStatuses(step);
+                if (step.status.statusId !== statusMap.current.statusId) {
+                    step.status = statusMap.current;
+                }
+                const prevSteps = steps.filter(st => st.stepOrder < step.stepOrder);
+                prevSteps.map(st => (st.status = statusMap.complete));
+                const nextSteps = steps.filter(st => st.stepOrder > step.stepOrder);
+                nextSteps.map(st => (st.status = statusMap.initial));
+                this.setGwSteps([...prevSteps, step, ...nextSteps]);
                 this.initialized.next(true);
             });
         this.eventStream.submitToStream(this.initialize, 'After', {
@@ -135,7 +147,7 @@ export class NgxGenericWizardService {
 
     setCurrentStep(step: INgxGwStep, steps?: INgxGwStep[], statusMap?: INgxGwStepStatusMap) {
         this.eventStream.submitToStream(this.setCurrentStep, 'Before');
-        if (this.initialized.value) {
+        if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap) {
             const gwSteps = this.ngxGwSteps.value;
             gwSteps.find(
                 gwStep => gwStep.stepId === step.stepId,
@@ -149,20 +161,12 @@ export class NgxGenericWizardService {
                 this.eventStream.submitToStream(this.setCurrentStep, 'Redo', { steps, statusMap });
                 return this.setCurrentStep(step);
             } else {
-                if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap) {
-                    const gwSteps = this.ngxGwSteps.value;
-                    gwSteps.find(
-                        gwStep => gwStep.stepId === step.stepId,
-                    ).status = this.ngxGwStepStatusMap.value.current;
-                    this.setGwSteps(gwSteps);
-                } else {
-                    this.eventStream.submitToStream(this.setCurrentStep, 'Error', {
-                        step,
-                        steps: steps ? steps : null,
-                        statusMap: statusMap ? statusMap : null,
-                    });
-                    throw new Error('Cannot set current step! No data initialized or passed in.');
-                }
+                this.eventStream.submitToStream(this.setCurrentStep, 'Error', {
+                    step,
+                    steps: steps ? steps : null,
+                    statusMap: statusMap ? statusMap : null,
+                });
+                throw new Error('Cannot set current step! No data initialized or passed in.');
             }
         }
         this.eventStream.submitToStream(this.setCurrentStep, 'After', {
@@ -177,7 +181,7 @@ export class NgxGenericWizardService {
         statusMap?: INgxGwStepStatusMap,
     ) {
         this.eventStream.submitToStream(this.setStepStatus, 'Before');
-        if (this.initialized.value) {
+        if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
             const gwSteps = this.ngxGwSteps.value;
             gwSteps.find(gwStep => gwStep.stepId === step.stepId).status = status;
             this.setGwSteps(gwSteps);
@@ -188,19 +192,13 @@ export class NgxGenericWizardService {
                 this.eventStream.submitToStream(this.setStepStatus, 'Redo', { steps, statusMap });
                 return this.setStepStatus(step, status);
             } else {
-                if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
-                    const gwSteps = this.ngxGwSteps.value;
-                    gwSteps.find(gwStep => gwStep.stepId === step.stepId).status = status;
-                    this.setGwSteps(gwSteps);
-                } else {
-                    this.eventStream.submitToStream(this.setStepStatus, 'Error', {
-                        step,
-                        status,
-                        steps: steps ? steps : null,
-                        statusMap: statusMap ? statusMap : null,
-                    });
-                    throw new Error('Cannot set step status! No data initialized or passed in.');
-                }
+                this.eventStream.submitToStream(this.setStepStatus, 'Error', {
+                    step,
+                    status,
+                    steps: steps ? steps : null,
+                    statusMap: statusMap ? statusMap : null,
+                });
+                throw new Error('Cannot set step status! No data initialized or passed in.');
             }
         }
         this.eventStream.submitToStream(this.setStepStatus, 'After', {
@@ -393,7 +391,11 @@ export class NgxGenericWizardService {
         config?: INgxGwConfig,
     ) {
         this.eventStream.submitToStream(this.next, 'Before');
-        if (this.initialized.value) {
+        if (
+            this.ngxGwConfig.value &&
+            this.ngxGwSteps.value.length > 0 &&
+            this.ngxGwStepStatusMap.value
+        ) {
             const gwSteps = this.ngxGwSteps.value;
             const maxOrder = this.getMaxOrder(gwSteps);
             const currentStep = gwSteps.find(
@@ -488,84 +490,10 @@ export class NgxGenericWizardService {
                 this.eventStream.submitToStream(this.next, 'Redo', { config, steps, statusMap });
                 return this.next(prevCompleted);
             } else {
-                if (
-                    this.ngxGwConfig.value &&
-                    this.ngxGwSteps.value.length > 0 &&
-                    this.ngxGwStepStatusMap.value
-                ) {
-                    const gwSteps = this.ngxGwSteps.value;
-                    const maxOrder = this.getMaxOrder(gwSteps);
-                    const currentStep = gwSteps.find(
-                        step => step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                    );
-                    if (currentStep.stepOrder === maxOrder) {
-                        if (prevCompleted) {
-                            gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            ).status = this.ngxGwStepStatusMap.value.complete;
-                        } else {
-                            gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            ).status = this.ngxGwStepStatusMap.value.incomplete;
-                        }
-                        this.setGwSteps(gwSteps);
-                        this.finalized.next(true);
-                        this.eventStream.submitToStream(this.next, 'After', {
-                            gwSteps,
-                            finalizeUrl: this.ngxGwConfig.value.finalizeUrl,
-                        });
-                        this.router.navigate([this.ngxGwConfig.value.finalizeUrl]);
-                    } else {
-                        const nextSteps = gwSteps.filter(
-                            step => step.stepOrder > currentStep.stepOrder,
-                        );
-                        const minOrder = this.getMinOrder(nextSteps);
-                        if (prevCompleted) {
-                            gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            ).status = this.ngxGwStepStatusMap.value.complete;
-                            gwSteps.find(
-                                step => step.stepOrder === minOrder,
-                            ).status = this.ngxGwStepStatusMap.value.current;
-                            this.setGwSteps(gwSteps);
-                            const nextStep = gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            );
-                            this.eventStream.submitToStream(this.next, 'After', {
-                                gwSteps,
-                                nextStep,
-                            });
-                            this.navigateToStep(nextStep, true);
-                        } else {
-                            gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            ).status = this.ngxGwStepStatusMap.value.incomplete;
-                            gwSteps.find(
-                                step => step.stepOrder === minOrder,
-                            ).status = this.ngxGwStepStatusMap.value.current;
-                            this.setGwSteps(gwSteps);
-                            const nextStep = gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            );
-                            this.eventStream.submitToStream(this.next, 'After', {
-                                gwSteps,
-                                nextStep,
-                            });
-                            this.navigateToStep(nextStep, true);
-                        }
-                    }
-                } else {
-                    this.eventStream.submitToStream(this.next, 'Error', steps);
-                    throw new Error(
-                        'Cannot move to next step in wizard! Wizard not initialized or no data passed in to operate on!',
-                    );
-                }
+                this.eventStream.submitToStream(this.next, 'Error', steps);
+                throw new Error(
+                    'Cannot move to next step in wizard! Wizard not initialized or no data passed in to operate on!',
+                );
             }
         }
     }
@@ -574,9 +502,14 @@ export class NgxGenericWizardService {
      * This function advances our UI to the previous step of the wizard, assuming that the previous step
      * was not completed
      */
-    prev(nextCompleted: boolean = false, steps?: INgxGwStep[], statusMap?: INgxGwStepStatusMap) {
+    prev(
+        nextCompleted: boolean = false,
+        steps?: INgxGwStep[],
+        statusMap?: INgxGwStepStatusMap,
+        config?: INgxGwConfig,
+    ) {
         this.eventStream.submitToStream(this.prev, 'Before');
-        if (this.initialized.value) {
+        if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
             const gwSteps = this.ngxGwSteps.value;
             const currentStep = gwSteps.find(
                 step => step.status.code === this.ngxGwStepStatusMap.value.current.code,
@@ -625,75 +558,23 @@ export class NgxGenericWizardService {
                 }
             }
         } else {
-            if (steps && steps.length > 0 && statusMap) {
+            if (
+                steps &&
+                steps.length > 0 &&
+                statusMap &&
+                config &&
+                Object.keys(config).length > 0
+            ) {
+                this.setGwConfig(config);
                 this.setGwSteps(steps);
                 this.setGwStepStatusMap(statusMap);
                 this.eventStream.submitToStream(this.next, 'Redo', { steps, statusMap });
                 return this.prev(nextCompleted);
             } else {
-                if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
-                    const gwSteps = this.ngxGwSteps.value;
-                    const currentStep = gwSteps.find(
-                        step => step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                    );
-                    const minOrder = this.getMinOrder(gwSteps);
-                    if (currentStep.stepOrder === minOrder) {
-                        this.eventStream.submitToStream(this.prev, 'After', {
-                            gwSteps,
-                            currentStep,
-                        });
-                        this.navigateToStep(currentStep, true);
-                    } else {
-                        const prevSteps = gwSteps.filter(
-                            step => step.stepOrder < currentStep.stepOrder,
-                        );
-                        const maxOrder = this.getMaxOrder(prevSteps);
-                        if (nextCompleted) {
-                            gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            ).status = this.ngxGwStepStatusMap.value.complete;
-                            gwSteps.find(
-                                step => step.stepOrder === maxOrder,
-                            ).status = this.ngxGwStepStatusMap.value.current;
-                            this.setGwSteps(gwSteps);
-                            const prevStep = gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            );
-                            this.eventStream.submitToStream(this.prev, 'After', {
-                                gwSteps,
-                                currentStep,
-                                prevStep,
-                            });
-                            this.navigateToStep(prevStep, true);
-                        } else {
-                            gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            ).status = this.ngxGwStepStatusMap.value.incomplete;
-                            gwSteps.find(
-                                step => step.stepOrder === maxOrder,
-                            ).status = this.ngxGwStepStatusMap.value.current;
-                            this.setGwSteps(gwSteps);
-                            const prevStep = gwSteps.find(
-                                step =>
-                                    step.status.code === this.ngxGwStepStatusMap.value.current.code,
-                            );
-                            this.eventStream.submitToStream(this.prev, 'After', {
-                                gwSteps,
-                                currentStep,
-                                prevStep,
-                            });
-                            this.navigateToStep(prevStep, true);
-                        }
-                    }
-                } else {
-                    this.eventStream.submitToStream(this.prev, 'Error');
-                    throw new Error(
-                        'Cannot move to previous step in wizard! Wizard not initialized or no data passed in to operate on!',
-                    );
-                }
+                this.eventStream.submitToStream(this.prev, 'Error');
+                throw new Error(
+                    'Cannot move to previous step in wizard! Wizard not initialized or no data passed in to operate on!',
+                );
             }
         }
     }
@@ -740,12 +621,10 @@ export class NgxGenericWizardService {
                 requestedUrl = requestedUrl.substr(1);
             }
         }
-        // // If ignoreIncomplete == false and if router.url requested is == finalizeUrl, redirect to finalizeUrl.
+        // If ignoreIncomplete == false and if router.url requested is == finalizeUrl, redirect to finalizeUrl.
         if (step && Object.keys(step).length > 0) {
-            if (!next && !navForward) {
-                this.setStepsStatuses(step, false);
-            } else if (!next && navForward) {
-                this.setStepsStatuses(step, true);
+            if (!next) {
+                this.setStepsStatuses(step, navForward);
             }
             const stepUrl = step.stepUrl;
             if (requestedUrl !== finalizeUrl) {
@@ -774,7 +653,7 @@ export class NgxGenericWizardService {
     }
 
     /**
-     * Given the next step we're planning to advance to, this takes care of setting our steps' status.
+     * Given the next step we're planning to advance to, this takes care of setting the status for the previous step and the new current
      *
      * PrevComplete will default to true and should be true if we're advancing due to clicking the 'next'
      * button, there are other conditions where this will be true too though.
@@ -790,28 +669,52 @@ export class NgxGenericWizardService {
         statusMap?: INgxGwStepStatusMap,
     ) {
         this.eventStream.submitToStream(this.setStepsStatuses, 'Before');
-        if (this.initialized.value) {
-            const prevSteps = this.ngxGwSteps.value.filter(
-                step => step.stepOrder < currentStep.stepOrder,
+        if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
+            const minOrder = this.getMinOrder(this.ngxGwSteps.value);
+            let prevStep = this.ngxGwSteps.value.find(
+                step => step.status.statusId === this.ngxGwStepStatusMap.value.current.statusId,
             );
-            const nextSteps = this.ngxGwSteps.value.filter(
-                step => step.stepOrder > currentStep.stepOrder,
-            );
-            if (prevSteps.length > 0) {
-                if (prevComplete) {
-                    prevSteps.map(step => (step.status = this.ngxGwStepStatusMap.value.complete));
+            let otherSteps: INgxGwStep[];
+            if (!prevStep) {
+                if (currentStep.stepOrder !== minOrder) {
+                    otherSteps = this.ngxGwSteps.value.filter(
+                        step => step.stepOrder < currentStep.stepOrder,
+                    );
+                    const maxOrder = this.getMaxOrder(otherSteps);
+                    prevStep = otherSteps.find(step => step.stepOrder === maxOrder);
+                    otherSteps = this.ngxGwSteps.value.filter(
+                        step =>
+                            step.stepId !== prevStep.stepId && step.stepId !== currentStep.stepId,
+                    );
+                    if (prevComplete) {
+                        prevStep.status = this.ngxGwStepStatusMap.value.complete;
+                        otherSteps.push(prevStep);
+                    } else {
+                        prevStep.status = this.ngxGwStepStatusMap.value.incomplete;
+                        otherSteps.push(prevStep);
+                    }
                 } else {
-                    prevSteps.map(step => (step.status = this.ngxGwStepStatusMap.value.incomplete));
+                    otherSteps = this.ngxGwSteps.value.filter(
+                        step => step.stepId !== currentStep.stepId,
+                    ); // Do not change any statuses
+                }
+            } else {
+                otherSteps = this.ngxGwSteps.value.filter(
+                    step => step.stepId !== prevStep.stepId && step.stepId !== currentStep.stepId,
+                ); // Only previous step's status will be changed
+                if (prevComplete) {
+                    prevStep.status = this.ngxGwStepStatusMap.value.complete;
+                    otherSteps.push(prevStep);
+                } else {
+                    prevStep.status = this.ngxGwStepStatusMap.value.incomplete;
+                    otherSteps.push(prevStep);
                 }
             }
-            if (nextSteps.length > 0) {
-                nextSteps.map(step => (step.status = this.ngxGwStepStatusMap.value.initial));
-            }
-            if (currentStep.status !== this.ngxGwStepStatusMap.value.current) {
+            if (currentStep.status.statusId !== this.ngxGwStepStatusMap.value.current.statusId) {
                 currentStep.status = this.ngxGwStepStatusMap.value.current;
             }
-            const allSteps = [...prevSteps, currentStep, ...nextSteps];
-            this.eventStream.submitToStream(this.setStepsStatuses, 'After');
+            const allSteps = [currentStep, ...otherSteps].sort((a, b) => a.stepOrder - b.stepOrder);
+            this.eventStream.submitToStream(this.setStepsStatuses, 'After', { steps: allSteps });
             this.setGwSteps(allSteps);
         } else {
             if (steps && steps.length > 0 && statusMap) {
@@ -823,44 +726,13 @@ export class NgxGenericWizardService {
                 });
                 return this.setStepsStatuses(currentStep, prevComplete);
             } else {
-                if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
-                    const prevSteps = this.ngxGwSteps.value.filter(
-                        step => step.stepOrder < currentStep.stepOrder,
-                    );
-                    const nextSteps = this.ngxGwSteps.value.filter(
-                        step => step.stepOrder > currentStep.stepOrder,
-                    );
-                    if (prevSteps.length > 0) {
-                        if (prevComplete) {
-                            prevSteps.map(
-                                step => (step.status = this.ngxGwStepStatusMap.value.complete),
-                            );
-                        } else {
-                            prevSteps.map(
-                                step => (step.status = this.ngxGwStepStatusMap.value.incomplete),
-                            );
-                        }
-                    }
-                    if (nextSteps.length > 0) {
-                        nextSteps.map(
-                            step => (step.status = this.ngxGwStepStatusMap.value.initial),
-                        );
-                    }
-                    if (currentStep.status !== this.ngxGwStepStatusMap.value.current) {
-                        currentStep.status = this.ngxGwStepStatusMap.value.current;
-                    }
-                    const allSteps = [...prevSteps, currentStep, ...nextSteps];
-                    this.eventStream.submitToStream(this.setStepsStatuses, 'After');
-                    this.setGwSteps(allSteps);
-                } else {
-                    this.eventStream.submitToStream(this.setStepsStatuses, 'Error', {
-                        currentStep,
-                        prevComplete,
-                    });
-                    throw new Error(
-                        'Cannot set status for steps! Wizard not initialized or no data passed in to operate on!',
-                    );
-                }
+                this.eventStream.submitToStream(this.setStepsStatuses, 'Error', {
+                    currentStep,
+                    prevComplete,
+                });
+                throw new Error(
+                    'Cannot set status for steps! Wizard not initialized or no data passed in to operate on!',
+                );
             }
         }
     }
@@ -868,102 +740,92 @@ export class NgxGenericWizardService {
     /**
      * This function let's us go back into the wizard after we've completed it.
      *
-     * We're passing in the config of the wizard we want to get back into.
+     * It will by default go to the last completed step
      */
-    resetFinalized(steps?: INgxGwStep[]) {
+    resetFinalized(steps?: INgxGwStep[], statusMap?: INgxGwStepStatusMap, config?: INgxGwConfig) {
         this.eventStream.submitToStream(this.resetFinalized, 'Before');
-        if (this.initialized.value) {
+        if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
             this.finalized.next(false);
             const gwSteps = this.ngxGwSteps.value;
-            const minOrder = this.getMinOrder(gwSteps);
+            const maxOrder = this.getMaxOrder(gwSteps);
+            const current = gwSteps.find(step => step.stepOrder === maxOrder);
             gwSteps.filter(
-                step => step.stepOrder === minOrder,
+                step => step.stepOrder === maxOrder,
             )[0].status = this.ngxGwStepStatusMap.value.current;
             this.setGwSteps(gwSteps);
-            const current = gwSteps.find(step => step.stepOrder === minOrder);
             this.eventStream.submitToStream(this.resetFinalized, 'After', {
                 steps: gwSteps,
                 current,
-                minOrder,
+                maxOrder,
             });
-            this.navigateToStep(current);
+            this.navigateToStep(current, true);
         } else {
-            if (steps && steps.length > 0) {
+            if (
+                steps &&
+                steps.length > 0 &&
+                statusMap &&
+                config &&
+                Object.keys(config).length > 0
+            ) {
+                this.setGwConfig(config);
                 this.setGwSteps(steps);
+                this.setGwStepStatusMap(statusMap);
                 this.eventStream.submitToStream(this.resetFinalized, 'Redo', { steps });
                 return this.resetFinalized();
             } else {
-                if (this.ngxGwSteps.value.length > 0) {
-                    this.finalized.next(false);
-                    const gwSteps = this.ngxGwSteps.value;
-                    const minOrder = this.getMinOrder(gwSteps);
-                    gwSteps.filter(
-                        step => step.stepOrder === minOrder,
-                    )[0].status = this.ngxGwStepStatusMap.value.current;
-                    this.setGwSteps(gwSteps);
-                    const current = gwSteps.find(step => step.stepOrder === minOrder);
-                    this.eventStream.submitToStream(this.resetFinalized, 'After', {
-                        steps: gwSteps,
-                        current,
-                        minOrder,
-                    });
-                    this.navigateToStep(current);
-                } else {
-                    this.eventStream.submitToStream(this.resetFinalized, 'Error', {
-                        steps: steps ? steps : null,
-                    });
-                    throw new Error(
-                        'Cannot reset finalized! Wizard not initialized or no data passed in to operate on!',
-                    );
-                }
+                this.eventStream.submitToStream(this.resetFinalized, 'Error', {
+                    steps: steps ? steps : null,
+                });
+                throw new Error(
+                    'Cannot reset finalized! Wizard not initialized or no data passed in to operate on!',
+                );
             }
         }
     }
 
     /**
-     * This completely resets the wizard
-     * setStepsStatuses
+     * This completely resets the wizard, then delivers us to the first step
      */
-    resetWizard(steps?: INgxGwStep[]) {
+    resetWizard(steps?: INgxGwStep[], statusMap?: INgxGwStepStatusMap, config?: INgxGwConfig) {
         this.eventStream.submitToStream(this.resetWizard, 'Before');
-        if (this.initialized.value) {
+        if (this.ngxGwSteps.value.length > 0 && this.ngxGwStepStatusMap.value) {
             this.finalized.next(false);
             const gwSteps = this.ngxGwSteps.value;
             const minOrder = this.getMinOrder(gwSteps);
             const current = gwSteps.find(step => step.stepOrder === minOrder);
-            this.setStepsStatuses(current, false);
+            gwSteps.filter(
+                step => step.stepOrder === minOrder,
+            )[0].status = this.ngxGwStepStatusMap.value.current;
+            gwSteps
+                .filter(step => step.stepOrder > minOrder)
+                .map(step => (step.status = this.ngxGwStepStatusMap.value.initial));
+            this.setGwSteps(gwSteps);
             this.eventStream.submitToStream(this.resetWizard, 'After', {
                 steps: this.ngxGwSteps.value,
                 current,
                 minOrder,
             });
-            this.navigateToStep(current);
+            this.navigateToStep(current, true);
         } else {
-            if (steps && steps.length > 0) {
+            if (
+                steps &&
+                steps.length > 0 &&
+                statusMap &&
+                config &&
+                Object.keys(config).length > 0
+            ) {
+                this.setGwConfig(config);
                 this.setGwSteps(steps);
+                this.setGwStepStatusMap(statusMap);
                 this.eventStream.submitToStream(this.resetWizard, 'Redo', { steps });
                 return this.resetWizard();
             } else {
-                if (this.ngxGwSteps.value.length > 0) {
-                    this.finalized.next(false);
-                    const gwSteps = this.ngxGwSteps.value;
-                    const minOrder = this.getMinOrder(gwSteps);
-                    const current = gwSteps.find(step => step.stepOrder === minOrder);
-                    this.setStepsStatuses(current, false);
-                    this.eventStream.submitToStream(this.resetWizard, 'After', {
-                        steps: this.ngxGwSteps.value,
-                        current,
-                        minOrder,
-                    });
-                    this.navigateToStep(current);
-                } else {
-                    this.eventStream.submitToStream(this.resetWizard, 'Error', {
-                        steps: steps ? steps : null,
-                    });
-                    throw new Error(
-                        'Cannot reset wizard! Wizard not initialized or no data passed in to operate on!',
-                    );
-                }
+                this.eventStream.submitToStream(this.resetWizard, 'Error', {
+                    steps: steps ? steps : null,
+                });
+                throw new Error(
+                    'Cannot reset wizard! Wizard not initialized or no data passed in to operate on!',
+                );
             }
         }
     }
@@ -996,7 +858,7 @@ export class NgxGenericWizardService {
 
     getStepCount(stepOrder: number, steps?: INgxGwStep[]) {
         let stepCount = 0;
-        if (this.initialized.value) {
+        if (this.ngxGwSteps.value.length > 0) {
             for (const step of this.ngxGwSteps.value) {
                 stepCount++;
                 if (step.stepOrder === stepOrder) {
@@ -1008,18 +870,9 @@ export class NgxGenericWizardService {
                 this.setGwSteps(steps);
                 return this.getStepCount(stepOrder);
             } else {
-                if (this.ngxGwSteps.value.length > 0) {
-                    for (const step of this.ngxGwSteps.value) {
-                        stepCount++;
-                        if (step.stepOrder === stepOrder) {
-                            break;
-                        }
-                    }
-                } else {
-                    throw new Error(
-                        'Cannot find step count! Wizard not initialized or no data passed in to operate on!',
-                    );
-                }
+                throw new Error(
+                    'Cannot find step count! Wizard not initialized or no data passed in to operate on!',
+                );
             }
         }
         return stepCount;

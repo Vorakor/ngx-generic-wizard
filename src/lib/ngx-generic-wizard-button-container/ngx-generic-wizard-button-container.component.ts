@@ -1,5 +1,13 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { combineLatest, Observable, Subscription } from 'rxjs';
+import {
+    Component,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+    ChangeDetectorRef,
+} from '@angular/core';
+import { combineLatest, Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, shareReplay } from 'rxjs/operators';
 
 import { NgxGenericWizardService } from '../ngx-generic-wizard.service';
@@ -12,10 +20,15 @@ import { NgxGwEventStreamService } from '../ngx-gw-event-stream.service';
 })
 export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChanges, OnDestroy {
     @Input() resetWizardBtn = false;
-    finalize$: Observable<boolean> = this.ngxGwService.finalized$; // Get rid of this, just use the service observable
+    finalize$: Observable<boolean> = this.ngxGwService.finalized$.pipe(
+        distinctUntilChanged(),
+        shareReplay({ refCount: true, bufferSize: 1 }),
+    );
     nextBtnText: string; // Turn into input
     prevBtnText: string; // Turn into input
-    prevBtnShow: boolean; // Turn into input
+    // prevBtnShow - internal variable used to determine when to show previous button
+    prevBtnShow: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    prevBtnShow$: Observable<boolean> = this.prevBtnShow.asObservable();
     reenterBtnText: string; // Turn into input
     minButtonWidth: number; // Internal variable used to size buttons, no need to be input
     resetBtn: boolean;
@@ -24,6 +37,7 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
     constructor(
         private ngxGwService: NgxGenericWizardService,
         private ngxGwEventStream: NgxGwEventStreamService,
+        private cref: ChangeDetectorRef,
     ) {}
 
     ngOnChanges(changes: SimpleChanges) {
@@ -65,9 +79,17 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
                 this.nextBtnText = 'Next';
             }
             if (currentStep && currentStep.stepOrder === minOrder) {
-                this.prevBtnShow = false;
+                this.prevBtnShow.next(false);
+                // tslint:disable-next-line: no-string-literal
+                if (!this.cref['destroyed']) {
+                    this.cref.detectChanges();
+                }
             } else {
-                this.prevBtnShow = true;
+                this.prevBtnShow.next(true);
+                // tslint:disable-next-line: no-string-literal
+                if (!this.cref['destroyed']) {
+                    this.cref.detectChanges();
+                }
             }
         });
         this.subs.push(wzBtnSub);
