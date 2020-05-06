@@ -18,7 +18,7 @@ import { NgxGwEventStreamService } from '../ngx-gw-event-stream.service';
     templateUrl: './ngx-generic-wizard-button-container.component.html',
     styleUrls: ['./ngx-generic-wizard-button-container.component.scss'],
 })
-export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChanges, OnDestroy {
+export class NgxGenericWizardButtonContainerComponent implements OnInit, OnDestroy {
     @Input() resetWizardBtn = false;
     finalize$: Observable<boolean> = this.ngxGwService.finalized$.pipe(
         distinctUntilChanged(),
@@ -27,24 +27,23 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
     nextBtnText: string; // Turn into input
     prevBtnText: string; // Turn into input
     // prevBtnShow - internal variable used to determine when to show previous button
-    prevBtnShow: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    prevBtnShow$: Observable<boolean> = this.prevBtnShow.asObservable();
+    prevBtnShow: boolean;
     reenterBtnText: string; // Turn into input
     minButtonWidth: number; // Internal variable used to size buttons, no need to be input
-    resetBtn: boolean;
+    // resetBtn: boolean;
     resetBtnText: string;
     subs: Subscription[] = [];
+    // private cref: ChangeDetectorRef,
     constructor(
         private ngxGwService: NgxGenericWizardService,
         private ngxGwEventStream: NgxGwEventStreamService,
-        private cref: ChangeDetectorRef,
     ) {}
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.resetWizardBtn) {
-            this.resetBtn = changes.resetWizardBtn.currentValue;
-        }
-    }
+    // ngOnChanges(changes: SimpleChanges) {
+    //     if (changes.resetWizardBtn) {
+    //         this.resetBtn = changes.resetWizardBtn.currentValue;
+    //     }
+    // }
 
     ngOnInit() {
         this.prevBtnText = 'Previous';
@@ -67,38 +66,38 @@ export class NgxGenericWizardButtonContainerComponent implements OnInit, OnChang
             const minOrder = this.ngxGwService.getMinOrder(steps);
             if (currentStep && currentStep.stepOrder === maxOrder) {
                 this.nextBtnText = 'Finish';
-                this.prevBtnShow.next(true);
+                this.prevBtnShow = true;
                 // tslint:disable-next-line: no-string-literal
-                if (!this.cref['destroyed']) {
-                    this.cref.detectChanges();
-                }
+                // if (!this.cref['destroyed']) {
+                //     this.cref.detectChanges();
+                // }
             } else {
                 this.nextBtnText = 'Next';
                 if (currentStep && currentStep.stepOrder === minOrder) {
-                    this.prevBtnShow.next(false);
+                    this.prevBtnShow = false;
                     // tslint:disable-next-line: no-string-literal
-                    if (!this.cref['destroyed']) {
-                        this.cref.detectChanges();
-                    }
+                    // if (!this.cref['destroyed']) {
+                    //     this.cref.detectChanges();
+                    // }
                 } else {
-                    this.prevBtnShow.next(true);
+                    this.prevBtnShow = true;
                     // tslint:disable-next-line: no-string-literal
-                    if (!this.cref['destroyed']) {
-                        this.cref.detectChanges();
-                    }
+                    // if (!this.cref['destroyed']) {
+                    //     this.cref.detectChanges();
+                    // }
                 }
             }
         });
-        this.subs.push(wzBtnSub);
-        const wzFinSub = this.ngxGwService.finalized$
-            .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }))
-            .subscribe(final => {
-                // tslint:disable-next-line: no-string-literal
-                if (!this.cref['destroyed']) {
-                    this.cref.detectChanges();
-                }
-            });
-        this.subs.push(wzFinSub);
+        // this.subs.push(wzBtnSub);
+        // const wzFinSub = this.ngxGwService.finalized$
+        //     .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }))
+        //     .subscribe(final => {
+        //         // tslint:disable-next-line: no-string-literal
+        //         // if (!this.cref['destroyed']) {
+        //         //     this.cref.detectChanges();
+        //         // }
+        //     });
+        // this.subs.push(wzFinSub);
         this.setButtonSize();
     }
 
